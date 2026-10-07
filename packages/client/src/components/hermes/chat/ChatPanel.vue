@@ -63,6 +63,7 @@ import TerminalPanel from "./TerminalPanel.vue";
 import SubagentStreamPanel from "./SubagentStreamPanel.vue";
 import { chatSessionAgentAvatar } from "@/utils/chat-agent-avatar";
 import { buildActiveSessionMenuOptions, buildSessionContextMenuOptions } from "./session-menu-options";
+import { buildSessionCategoryMenuChildren } from "./session-category-menu";
 import PageSidebarNav from "@/components/layout/PageSidebarNav.vue";
 import PageSidebarFooter from "@/components/layout/PageSidebarFooter.vue";
 import { isStoredSuperAdmin } from "@/api/client";
@@ -353,11 +354,7 @@ async function submitBrowserAnnotations(payload: BrowserAnnotationSubmission): P
 
 async function handleSessionClick(
   sessionId: string,
-  options: { preserveCategoryCollapse?: boolean } = {},
 ) {
-  if (!options.preserveCategoryCollapse) {
-    setCategoryRevealSuppressedSessionId(null);
-  }
   chatStore.clearSessionCompletedUnread(sessionId);
   if (isMobile.value) showSessions.value = false;
   await router.push({
@@ -597,51 +594,7 @@ const createCategoryPendingCategory = ref<SessionCategory | null>(null);
 const createCategorySubmitting = ref(false);
 const createCategoryInputRef = ref<InstanceType<typeof NInput> | null>(null);
 let sessionCategoriesLoadPromise: Promise<void> | null = null;
-const COLLAPSED_CATEGORIES_STORAGE_KEY = "hermes_chat_collapsed_categories";
-const RECENT_CATEGORY_REVEAL_SUPPRESSION_STORAGE_KEY = "hermes_chat_recent_category_reveal_suppression";
 
-function loadCollapsedCategories(): Set<string> {
-  try {
-    const value = JSON.parse(localStorage.getItem(COLLAPSED_CATEGORIES_STORAGE_KEY) || "[]");
-    return new Set(Array.isArray(value) ? value.map(String) : []);
-  } catch {
-    return new Set();
-  }
-}
-
-const collapsedCategories = ref<Set<string>>(loadCollapsedCategories());
-
-function loadCategoryRevealSuppressedSessionId(): string | null {
-  try {
-    return sessionStorage.getItem(RECENT_CATEGORY_REVEAL_SUPPRESSION_STORAGE_KEY);
-  } catch {
-    return null;
-  }
-}
-
-const categoryRevealSuppressedSessionId = ref<string | null>(
-  loadCategoryRevealSuppressedSessionId(),
-);
-
-function setCategoryRevealSuppressedSessionId(sessionId: string | null) {
-  categoryRevealSuppressedSessionId.value = sessionId;
-  try {
-    if (sessionId) {
-      sessionStorage.setItem(RECENT_CATEGORY_REVEAL_SUPPRESSION_STORAGE_KEY, sessionId);
-    } else {
-      sessionStorage.removeItem(RECENT_CATEGORY_REVEAL_SUPPRESSION_STORAGE_KEY);
-    }
-  } catch {
-    // Keep the in-memory behavior when session storage is unavailable.
-  }
-}
-
-function persistCollapsedCategories() {
-  localStorage.setItem(
-    COLLAPSED_CATEGORIES_STORAGE_KEY,
-    JSON.stringify([...collapsedCategories.value]),
-  );
-}
 async function handleProfileFilterChange(value: string | null) {
   chatStore.setSessionProfileFilter(value);
   await chatStore.loadSessions(chatStore.sessionProfileFilter);
@@ -1588,34 +1541,13 @@ const contextSession = computed(() =>
     : null,
 );
 
-const showCategoryContextMenu = ref(false);
-const categoryContextMenuX = ref(0);
-const categoryContextMenuY = ref(0);
 const categoryContextId = ref<number | null>(null);
 const categoryContextName = computed(() =>
   sessionCategories.value.find((item) => item.id === categoryContextId.value)?.name || "",
 );
-const categoryContextMenuOptions = computed<DropdownOption[]>(() => [
-  { label: t("chat.renameCategory"), key: "rename" },
-  { label: t("chat.deleteCategory"), key: "delete" },
-]);
 const showRenameCategoryModal = ref(false);
 const renameCategoryValue = ref("");
 const showDeleteCategoryModal = ref(false);
-
-
-
-function handleCategoryContextMenuSelect(key: string) {
-  showCategoryContextMenu.value = false;
-  const category = sessionCategories.value.find((item) => item.id === categoryContextId.value);
-  if (!category) return;
-  if (key === "rename") {
-    renameCategoryValue.value = category.name;
-    showRenameCategoryModal.value = true;
-  } else if (key === "delete") {
-    showDeleteCategoryModal.value = true;
-  }
-}
 
 async function handleRenameCategoryConfirm() {
   const categoryId = categoryContextId.value;
@@ -1643,13 +1575,6 @@ async function handleDeleteCategoryConfirm() {
     for (const session of chatStore.sessions) {
       if (session.categoryId === categoryId) session.categoryId = null;
     }
-    const collapsedKey = `category-${categoryId}`;
-    if (collapsedCategories.value.has(collapsedKey)) {
-      collapsedCategories.value = new Set(
-        [...collapsedCategories.value].filter((key) => key !== collapsedKey),
-      );
-      persistCollapsedCategories();
-    }
     message.success(t("chat.categoryDeleted"));
     showDeleteCategoryModal.value = false;
   } catch (error: any) {
@@ -1668,6 +1593,32 @@ const contextMenuOptions = computed(() => buildSessionContextMenuOptions({
   pinned: contextSessionPinned.value,
   includeArchive: contextSession.value?.source !== "global_agent",
   includeModel: canSetContextSessionModel.value,
+  categoryChildren: [
+    ...buildSessionCategoryMenuChildren({
+      categories: sessionCategories.value,
+      currentCategoryId: contextSession.value?.categoryId,
+      createCategoryLabel: t("chat.createCategory"),
+      uncategorizedLabel: t("chat.uncategorized"),
+      loadFailedLabel: t("chat.categoryLoadFailed"),
+      retryLabel: t("common.retry"),
+      loadFailed: sessionCategoriesLoadFailed.value,
+      loading: sessionCategoriesLoading.value,
+    }),
+    {
+      type: 'divider',
+      key: 'category:manage-divider',
+    },
+    {
+      label: t("chat.renameCategory"),
+      key: 'category:rename-current',
+      disabled: !contextSession.value?.categoryId,
+    },
+    {
+      label: t("chat.deleteCategory"),
+      key: 'category:delete-current',
+      disabled: !contextSession.value?.categoryId,
+    },
+  ],
   labels: {
     pin: t("chat.pin"),
     unpin: t("chat.unpin"),
@@ -1696,7 +1647,6 @@ const contextMenuCategoriesKey = computed(() => [
 
 function handleContextMenu(e: MouseEvent, sessionId: string) {
   e.preventDefault();
-  showCategoryContextMenu.value = false;
   contextSessionId.value = sessionId;
   showContextMenu.value = true;
   contextMenuX.value = e.clientX;
@@ -1731,6 +1681,23 @@ async function handleContextMenuSelect(key: string) {
     nextTick(() => {
       createCategoryInputRef.value?.focus();
     });
+    return;
+  }
+  if (key === "category:rename-current") {
+    const session = contextSession.value;
+    if (!session?.categoryId) return;
+    categoryContextId.value = session.categoryId;
+    const category = sessionCategories.value.find((item) => item.id === session.categoryId);
+    if (!category) return;
+    renameCategoryValue.value = category.name;
+    showRenameCategoryModal.value = true;
+    return;
+  }
+  if (key === "category:delete-current") {
+    const session = contextSession.value;
+    if (!session?.categoryId) return;
+    categoryContextId.value = session.categoryId;
+    showDeleteCategoryModal.value = true;
     return;
   }
   if (key === "pin") {
@@ -2379,18 +2346,6 @@ async function handleSessionModelCustomSubmit() {
       :show="showContextMenu"
       @select="handleContextMenuSelect"
       @clickoutside="handleClickOutside"
-    />
-
-
-    <NDropdown
-      placement="bottom-start"
-      trigger="manual"
-      :x="categoryContextMenuX"
-      :y="categoryContextMenuY"
-      :options="categoryContextMenuOptions"
-      :show="showCategoryContextMenu"
-      @select="handleCategoryContextMenuSelect"
-      @clickoutside="showCategoryContextMenu = false"
     />
 
     <NModal
