@@ -36,7 +36,7 @@ import {
   NDrawerContent,
   NDropdown,
   NInput,
-  NInputNumber,
+  
   NModal,
   NSelect,
   NTooltip,
@@ -62,8 +62,6 @@ import OutlinePanel from "./OutlinePanel.vue";
 import TerminalPanel from "./TerminalPanel.vue";
 import SubagentStreamPanel from "./SubagentStreamPanel.vue";
 import { chatSessionAgentAvatar } from "@/utils/chat-agent-avatar";
-import { buildVisibleSessionCategoryGroups, partitionRecentSessions } from "./session-category-groups";
-import { buildSessionCategoryMenuChildren, resolveRecentSessionCategoryLabel } from "./session-category-menu";
 import { buildActiveSessionMenuOptions, buildSessionContextMenuOptions } from "./session-menu-options";
 import PageSidebarNav from "@/components/layout/PageSidebarNav.vue";
 import PageSidebarFooter from "@/components/layout/PageSidebarFooter.vue";
@@ -371,11 +369,6 @@ async function handleSessionClick(
   }
 }
 
-async function handleRecentSessionClick(sessionId: string) {
-  // Recent is a shortcut; selecting it must not overwrite the real category's saved collapse state.
-  setCategoryRevealSuppressedSessionId(sessionId);
-  await handleSessionClick(sessionId, { preserveCategoryCollapse: true });
-}
 
 
 watch(
@@ -606,8 +599,6 @@ const createCategoryInputRef = ref<InstanceType<typeof NInput> | null>(null);
 let sessionCategoriesLoadPromise: Promise<void> | null = null;
 const COLLAPSED_CATEGORIES_STORAGE_KEY = "hermes_chat_collapsed_categories";
 const RECENT_CATEGORY_REVEAL_SUPPRESSION_STORAGE_KEY = "hermes_chat_recent_category_reveal_suppression";
-const showRecentCountModal = ref(false);
-const recentCountDraft = ref(sessionBrowserPrefsStore.recentCount);
 
 function loadCollapsedCategories(): Set<string> {
   try {
@@ -651,14 +642,6 @@ function persistCollapsedCategories() {
     JSON.stringify([...collapsedCategories.value]),
   );
 }
-
-function toggleCategoryGroup(key: string) {
-  const next = new Set(collapsedCategories.value);
-  if (next.has(key)) next.delete(key);
-  else next.add(key);
-  collapsedCategories.value = next;
-  persistCollapsedCategories();
-}
 async function handleProfileFilterChange(value: string | null) {
   chatStore.setSessionProfileFilter(value);
   await chatStore.loadSessions(chatStore.sessionProfileFilter);
@@ -673,30 +656,7 @@ function sortSessionsForSidebar(items: Session[]): Session[] {
   });
 }
 
-const recentSessionPartition = computed(() => partitionRecentSessions(
-  chatStore.sessions.filter((session) => !session.isPinned),
-  sessionBrowserPrefsStore.recentCount,
-  t("chat.recent"),
-));
-const recentSessions = computed(() => recentSessionPartition.value.group);
-const nonRecentSessions = computed(() => recentSessionPartition.value.remaining);
-const sessionCategoryNames = computed(() => new Map(
-  sessionCategories.value.map(category => [category.id, category.name]),
-));
 
-function recentCategoryLabel(session: Session): string | undefined {
-  return resolveRecentSessionCategoryLabel(
-    session.categoryId,
-    sessionCategoryNames.value,
-    sessionCategoriesLoaded.value,
-    sessionCategoriesLoadFailed.value,
-    t("chat.uncategorized"),
-  );
-}
-
-function toggleRecentGroup() {
-  sessionBrowserPrefsStore.setRecentCollapsed(!sessionBrowserPrefsStore.recentCollapsed);
-}
 
 const pinnedSessions = computed(() =>
   sortSessionsForSidebar(
@@ -706,70 +666,15 @@ const pinnedSessions = computed(() =>
   ),
 );
 
+// 单一列表: 全部未置顶会话按时间倒序, 不再按最近/分组分区
 const unpinnedSessions = computed(() =>
   sortSessionsForSidebar(
-    nonRecentSessions.value.filter(
-      (session) => !session.isPinned,
-    ),
+    chatStore.sessions.filter((session) => !session.isPinned),
   ),
 );
 
-const categorizedSessions = computed(() => buildVisibleSessionCategoryGroups(
-  sessionCategories.value,
-  unpinnedSessions.value,
-  t("chat.uncategorized"),
-));
 
-function openRecentCountModal(event: MouseEvent) {
-  event.stopPropagation();
-  recentCountDraft.value = sessionBrowserPrefsStore.recentCount;
-  showRecentCountModal.value = true;
-}
 
-function saveRecentCount() {
-  sessionBrowserPrefsStore.setRecentCount(recentCountDraft.value);
-  showRecentCountModal.value = false;
-}
-
-const activeSessionCategoryKey = computed(() => {
-  const session = chatStore.sessions.find((item) => item.id === chatStore.activeSessionId);
-  return session?.categoryId == null ? "category-none" : `category-${session.categoryId}`;
-});
-
-watch(
-  [
-    () => sessionCategoriesLoaded.value,
-    () => categorizedSessions.value.map((group) => group.key).join("\u0000"),
-    () => chatStore.activeSessionId,
-    activeSessionCategoryKey,
-  ],
-  ([loaded, , sessionId, activeKey], [previousLoaded, , previousSessionId, previousActiveKey]) => {
-    if (!sessionCategoriesLoaded.value || categorizedSessions.value.length === 0) return;
-    const activeSession = chatStore.sessions.find((session) => session.id === chatStore.activeSessionId);
-    if (categoryRevealSuppressedSessionId.value === activeSession?.id) return;
-    setCategoryRevealSuppressedSessionId(null);
-    // Only navigation or a changed category should reveal the active session.
-    // Background list refreshes must preserve manually collapsed groups.
-    const shouldReveal = loaded !== previousLoaded
-      || sessionId !== previousSessionId
-      || activeKey !== previousActiveKey;
-    if (shouldReveal && collapsedCategories.value.has(activeKey)) {
-      collapsedCategories.value = new Set(
-        [...collapsedCategories.value].filter((key) => key !== activeKey),
-      );
-      persistCollapsedCategories();
-    }
-    if (localStorage.getItem(COLLAPSED_CATEGORIES_STORAGE_KEY) !== null) return;
-    const expandedKey = categorizedSessions.value.some((group) => group.key === activeKey)
-      ? activeKey
-      : categorizedSessions.value[0]?.key;
-    collapsedCategories.value = new Set(
-      categorizedSessions.value.map((group) => group.key).filter((key) => key !== expandedKey),
-    );
-    persistCollapsedCategories();
-  },
-  { immediate: true },
-);
 
 async function loadSessionCategories() {
   if (sessionCategoriesLoadPromise) return sessionCategoriesLoadPromise;
@@ -1698,33 +1603,7 @@ const showRenameCategoryModal = ref(false);
 const renameCategoryValue = ref("");
 const showDeleteCategoryModal = ref(false);
 
-function handleCategoryContextMenu(event: MouseEvent, groupKey: string) {
-  if (groupKey === "category-none") return;
-  const categoryId = Number(groupKey.slice("category-".length));
-  if (!Number.isSafeInteger(categoryId)) return;
-  event.preventDefault();
-  event.stopPropagation();
-  showContextMenu.value = false;
-  categoryContextId.value = categoryId;
-  categoryContextMenuX.value = event.clientX;
-  categoryContextMenuY.value = event.clientY;
-  showCategoryContextMenu.value = true;
-}
 
-function handleCategoryMenuButton(event: MouseEvent, groupKey: string) {
-  if (groupKey === "category-none") return;
-  const categoryId = Number(groupKey.slice("category-".length));
-  if (!Number.isSafeInteger(categoryId)) return;
-  event.preventDefault();
-  event.stopPropagation();
-  const anchor = event.currentTarget as HTMLElement;
-  const rect = anchor.getBoundingClientRect();
-  showContextMenu.value = false;
-  categoryContextId.value = categoryId;
-  categoryContextMenuX.value = rect.left;
-  categoryContextMenuY.value = rect.bottom;
-  showCategoryContextMenu.value = true;
-}
 
 function handleCategoryContextMenuSelect(key: string) {
   showCategoryContextMenu.value = false;
@@ -1789,16 +1668,6 @@ const contextMenuOptions = computed(() => buildSessionContextMenuOptions({
   pinned: contextSessionPinned.value,
   includeArchive: contextSession.value?.source !== "global_agent",
   includeModel: canSetContextSessionModel.value,
-  categoryChildren: buildSessionCategoryMenuChildren({
-    categories: sessionCategories.value,
-    currentCategoryId: contextSession.value?.categoryId,
-    createCategoryLabel: t("chat.createCategory"),
-    uncategorizedLabel: t("chat.uncategorized"),
-    loadFailedLabel: t("chat.categoryLoadFailed"),
-    retryLabel: t("common.retry"),
-    loadFailed: sessionCategoriesLoadFailed.value,
-    loading: sessionCategoriesLoading.value,
-  }),
   labels: {
     pin: t("chat.pin"),
     unpin: t("chat.unpin"),
@@ -2472,142 +2341,28 @@ async function handleSessionModelCustomSubmit() {
         </template>
 
         <template
-          v-if="
-            sessionBrowserPrefsStore.showRecentSessions &&
-            recentSessions.sessions.length > 0
-          "
+          v-if="unpinnedSessions.length > 0"
         >
-          <div class="session-group-header session-group-header--recent">
-            <button
-              class="session-group-toggle"
-              type="button"
-              :aria-expanded="!sessionBrowserPrefsStore.recentCollapsed"
-              @click="toggleRecentGroup"
-            >
-              <svg
-                width="10"
-                height="10"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                class="group-chevron"
-                :class="{ collapsed: sessionBrowserPrefsStore.recentCollapsed }"
-                aria-hidden="true"
-              >
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
-              <span class="session-group-label">{{ recentSessions.label }}</span>
-              <span class="session-group-count">{{ recentSessions.sessions.length }}</span>
-            </button>
-            <button class="session-group-config" type="button" :title="t('chat.recentCount')" @click="openRecentCountModal">⚙</button>
-          </div>
-          <template v-if="!sessionBrowserPrefsStore.recentCollapsed">
-            <SessionListItem
-              v-for="s in recentSessions.sessions"
-              :key="`recent-${s.id}`"
-              :session="s"
-              :active="s.id === chatStore.activeSessionId"
-              :pinned="Boolean(s.isPinned)"
-              :can-delete="s.id !== chatStore.activeSessionId || chatStore.sessions.length > 1"
-              :streaming="chatStore.isSessionWorking(s.id)"
-              :completed-unread="chatStore.isSessionCompletedUnread(s.id)"
-              :selectable="isBatchMode"
-              :selected="isSessionSelected(s)"
-              :show-profile="true"
-              :category-label="recentCategoryLabel(s)"
-              :to="sessionHref(s.id)"
-              :intercept-modified-navigation="desktopChatWindowAvailable"
-              @select="handleRecentSessionClick(s.id)"
-              @open-new="openSessionInNewTab(s.id, s.profile || null)"
-              @contextmenu="handleContextMenu($event, s.id)"
-              @delete="handleDeleteSession(s.id)"
-              @toggle-select="toggleSessionSelection(s)"
-            />
-          </template>
-        </template>
-
-        <div
-          v-if="sessionCategoriesLoadFailed"
-          class="session-category-load-error"
-          role="alert"
-        >
-          <span>{{ t("chat.categoryLoadFailed") }}</span>
-          <button
-            type="button"
-            :disabled="sessionCategoriesLoading"
-            @click="retrySessionCategories"
-          >
-            {{ t("common.retry") }}
-          </button>
-        </div>
-
-        <template v-for="group in categorizedSessions" :key="group.key">
-          <div
-            class="session-group-header"
-            @click="toggleCategoryGroup(group.key)"
-            @contextmenu="handleCategoryContextMenu($event, group.key)"
-          >
-            <svg
-              width="10"
-              height="10"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              class="group-chevron"
-              :class="{ collapsed: collapsedCategories.has(group.key) }"
-            >
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-            <span class="session-group-label">{{ group.label }}</span>
-            <span class="session-group-count">{{ group.sessions.length }}</span>
-            <button
-              v-if="group.key !== 'category-none'"
-              class="session-category-menu-button"
-              type="button"
-              :aria-label="t('chat.more')"
-              :title="t('chat.more')"
-              @click="handleCategoryMenuButton($event, group.key)"
-            >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <circle cx="5" cy="12" r="1.6" />
-                <circle cx="12" cy="12" r="1.6" />
-                <circle cx="19" cy="12" r="1.6" />
-              </svg>
-            </button>
-          </div>
-          <template v-if="!collapsedCategories.has(group.key)">
-            <SessionListItem
-              v-for="s in group.sessions"
-              :key="s.id"
-              :session="s"
-              :active="s.id === chatStore.activeSessionId"
-              :pinned="false"
-              :can-delete="
-                s.id !== chatStore.activeSessionId ||
-                chatStore.sessions.length > 1
-              "
-              :streaming="chatStore.isSessionWorking(s.id)"
-              :completed-unread="chatStore.isSessionCompletedUnread(s.id)"
-              :selectable="isBatchMode"
-              :selected="isSessionSelected(s)"
-              :show-profile="true"
-              :to="sessionHref(s.id)"
-              :intercept-modified-navigation="desktopChatWindowAvailable"
-              @select="handleSessionClick(s.id)"
-              @open-new="openSessionInNewTab(s.id, s.profile || null)"
-              @contextmenu="handleContextMenu($event, s.id)"
-              @delete="handleDeleteSession(s.id)"
-              @toggle-select="toggleSessionSelection(s)"
-            />
-          </template>
+          <SessionListItem
+            v-for="s in unpinnedSessions"
+            :key="`all-${s.id}`"
+            :session="s"
+            :active="s.id === chatStore.activeSessionId"
+            :pinned="false"
+            :can-delete="s.id !== chatStore.activeSessionId || chatStore.sessions.length > 1"
+            :streaming="chatStore.isSessionWorking(s.id)"
+            :completed-unread="chatStore.isSessionCompletedUnread(s.id)"
+            :selectable="isBatchMode"
+            :selected="isSessionSelected(s)"
+            :show-profile="true"
+            :to="sessionHref(s.id)"
+            :intercept-modified-navigation="desktopChatWindowAvailable"
+            @select="handleSessionClick(s.id)"
+            @open-new="openSessionInNewTab(s.id, s.profile || null)"
+            @contextmenu="handleContextMenu($event, s.id)"
+            @delete="handleDeleteSession(s.id)"
+            @toggle-select="toggleSessionSelection(s)"
+          />
         </template>
       </div>
       <PageSidebarFooter v-if="showSessions" />
@@ -2626,16 +2381,6 @@ async function handleSessionModelCustomSubmit() {
       @clickoutside="handleClickOutside"
     />
 
-    <NModal
-      v-model:show="showRecentCountModal"
-      preset="dialog"
-      :title="t('chat.recentCount')"
-      :positive-text="t('common.ok')"
-      :negative-text="t('common.cancel')"
-      @positive-click="saveRecentCount"
-    >
-      <NInputNumber v-model:value="recentCountDraft" :min="1" :max="100" />
-    </NModal>
 
     <NDropdown
       placement="bottom-start"

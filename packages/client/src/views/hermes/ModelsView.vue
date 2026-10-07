@@ -1,4 +1,5 @@
 <script setup lang="ts">
+defineOptions({ name: "ModelsView" })
 import PageLoading from '@/components/common/PageLoading.vue'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import { computed, ref, onMounted, onUnmounted, watch } from 'vue'

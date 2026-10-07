@@ -3,7 +3,7 @@ name: Sync upstream (ekko-studio)
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */6 * * *"   # 每 6 小时检查一次上游更新
+    - cron: "0 2 * * *"   # 每天 02:00 检查一次上游更新
 
 permissions:
   contents: write
@@ -29,33 +29,81 @@ jobs:
           git config user.email "lzylipu-bot@users.noreply.github.com"
           git config pull.rebase false
 
-      - name: Add upstream and fetch
+      # 记录本 fork 相对上游 main 的所有定制文件（hermes-only 相对上游的差异）
+      # 这些文件是品牌/导航/去套娃/去分组的定制，必须在 merge 后原样恢复，
+      # 不能被上游同步覆盖。
+      - name: Snapshot local customizations (diff vs upstream main)
         run: |
           git remote add upstream https://github.com/EKKOLearnAI/ekko-studio.git
           git fetch upstream main
-
-      # 备份本 fork 的 3 处定制文件，避免被上游 merge 覆盖
-      - name: Backup local customizations
-        run: |
+          # 三点 diff = 从共同祖先到 hermes-only 的全部改动文件（即我们的定制）
+          git diff --name-only $(git merge-base upstream/main HEAD)..HEAD > /tmp/custom_files.txt
+          echo "Custom files to protect: $(wc -l < /tmp/custom_files.txt)"
+          cat /tmp/custom_files.txt
+          # 备份这些文件到 /tmp/hermes-custom
           mkdir -p /tmp/hermes-custom
-          cp config/agents.json /tmp/hermes-custom/ 2>/dev/null || true
-          cp packages/client/src/utils/agent-options.ts /tmp/hermes-custom/ 2>/dev/null || true
-          cp packages/client/src/components/hermes/chat/ChatPanel.vue /tmp/hermes-custom/ 2>/dev/null || true
+          while IFS= read -r f; do
+            if [ -f "$f" ]; then
+              mkdir -p "/tmp/hermes-custom/$(dirname "$f")"
+              cp "$f" "/tmp/hermes-custom/$f"
+            fi
+          done < /tmp/custom_files.txt
 
-      # 合并上游 main，允许冲突继续（不因冲突中断）
+      # 合并上游 main（接受上游对非定制文件的新增/修改）
       - name: Merge upstream main
         run: |
-          git merge --no-edit upstream/main || echo "merge had conflicts, will restore custom files below"
+          git merge --no-edit upstream/main || true
 
-      # 同步后强制恢复本 fork 的定制文件（保留 hermes-only 修改）
+      # 同步后强制恢复全部定制文件，保证 hermes-only 的定制始终赢
       - name: Restore local customizations
         run: |
-          if [ -f /tmp/hermes-custom/agents.json ]; then cp /tmp/hermes-custom/agents.json config/agents.json; fi
-          if [ -f /tmp/hermes-custom/agent-options.ts ]; then cp /tmp/hermes-custom/agent-options.ts packages/client/src/utils/agent-options.ts; fi
-          if [ -f /tmp/hermes-custom/ChatPanel.vue ]; then cp /tmp/hermes-custom/ChatPanel.vue packages/client/src/components/hermes/chat/ChatPanel.vue; fi
+          if [ ! -f /tmp/custom_files.txt ]; then echo "no custom files snapshot"; exit 0; fi
+          while IFS= read -r f; do
+            if [ -f "/tmp/hermes-custom/$f" ]; then
+              cp "/tmp/hermes-custom/$f" "$f"
+              echo "restored: $f"
+            fi
+          done < /tmp/custom_files.txt
 
-      - name: Commit and push hermes-only
+      # 上游可能删除的定制文件，若上游已删而我们还在备份中，恢复之
+      - name: Restore deleted custom files
+        run: |
+          if [ ! -f /tmp/custom_files.txt ]; then exit 0; fi
+          while IFS= read -r f; do
+            if [ -f "/tmp/hermes-custom/$f" ] && [ ! -f "$f" ]; then
+              mkdir -p "$(dirname "$f")"
+              cp "/tmp/hermes-custom/$f" "$f"
+              echo "restored deleted: $f"
+            fi
+          done < /tmp/custom_files.txt
+
+      - name: Commit
         run: |
           git add -A
           git diff --cached --quiet || git commit -m "sync: merge upstream into hermes-only, keep hermes-only customizations"
-          git push origin hermes-only
+
+      # 推送用 REST API（绕过 actions/checkout 注入的 git extraheader），认证走 GH_TOKEN
+      - name: Push hermes-only via REST API
+        env:
+          GH_TOKEN: ${{ secrets.PUSH_TOKEN }}
+        run: |
+          HEAD_SHA=$(git rev-parse HEAD)
+          code=$(curl -s -o /tmp/push_resp.json -w "%{http_code}" -X PUT \
+            -H "Authorization: token $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/lzylipu/ekko-studio/git/refs/heads/hermes-only \
+            -d "{\"sha\":\"$HEAD_SHA\"}")
+          echo "push http_code=$code"
+          if [ "$code" = "200" ] || [ "$code" = "204" ]; then
+            echo "push ok"
+          elif [ "$code" = "422" ]; then
+            # ref 已指向同 commit：上游无新内容，视为成功
+            if grep -q "Update is not a fast forward\|Reference does not exist" /tmp/push_resp.json; then
+              cat /tmp/push_resp.json
+              exit 1
+            fi
+            echo "ref already up to date, nothing to push"
+          else
+            cat /tmp/push_resp.json
+            exit 1
+          fi

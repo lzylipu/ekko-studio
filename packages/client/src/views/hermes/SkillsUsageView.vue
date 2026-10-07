@@ -1,4 +1,5 @@
 <script setup lang="ts">
+defineOptions({ name: "SkillsUsageView" })
 import PageLoading from '@/components/common/PageLoading.vue'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import { computed, onMounted, ref } from 'vue'

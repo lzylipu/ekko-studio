@@ -1,4 +1,5 @@
 <script setup lang="ts">
+defineOptions({ name: "LogsView" })
 import PageLoading from '@/components/common/PageLoading.vue'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import { ref, onMounted, onUnmounted, computed } from 'vue'
@@ -21,7 +22,7 @@ const levelFilter = ref<string>('')
 const searchQuery = ref('')
 
 function displayLogName(name: string): string {
-  return name.replace(/^ekko-agent(?=\/|$)/, 'Ekko')
+  return name.replace(/^ekko-agent(?=\/|$)/, 'Hermes')
 }
 
 const logOptions = computed(() =>

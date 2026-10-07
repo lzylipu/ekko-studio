@@ -44,8 +44,8 @@ const DEFAULT_MOBILE_RELEASE: StudioMobileRelease = {
   channels: {
     androidApk: {
       version: '1.0.0',
-      githubUrl: 'https://github.com/EKKOLearnAI/ekko-studio/releases/download/v1.0.0/Ekko Studio.apk',
-      cloudflareUrl: 'https://download.ekkolearnai.com/v1.0.0/Ekko Studio.apk',
+      githubUrl: 'https://github.com/EKKOLearnAI/ekko-studio/releases/download/v1.0.0/Hermes Studio.apk',
+      cloudflareUrl: 'https://download.ekkolearnai.com/v1.0.0/Hermes Studio.apk',
       online: true,
     },
     googlePlay: { version: '1.0.0', url: '', online: false },
@@ -707,7 +707,7 @@ onUnmounted(() => {
             <div class="app-download-brand">
               <img class="app-download-logo" src="/logo.png" alt="">
               <div>
-                <span>Ekko Studio Mobile</span>
+                <span>Hermes Studio Mobile</span>
                 <h3>{{ t('connections.app.downloadTitle') }}</h3>
               </div>
             </div>

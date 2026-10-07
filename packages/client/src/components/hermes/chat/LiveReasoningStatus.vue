@@ -12,7 +12,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   agent: () => ({ label: 'Hermes', src: '/coding-agents/hermes.png' }),
 })
-const isEkko = computed(() => props.agent.label === 'Ekko')
+const isEkko = computed(() => /hermes\.png/.test(props.agent.src))
 
 const { t } = useI18n()
 const reasoningBody = ref<HTMLElement | null>(null)

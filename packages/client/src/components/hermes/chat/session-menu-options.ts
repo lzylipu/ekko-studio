@@ -46,7 +46,7 @@ interface BuildSessionContextMenuOptions {
   pinned: boolean
   includeArchive: boolean
   includeModel: boolean
-  categoryChildren: DropdownOption[]
+  categoryChildren?: DropdownOption[]
   labels: SessionContextMenuLabels
 }
 
@@ -177,9 +177,11 @@ export function buildSessionContextMenuOptions({
     options.push(actionOption(labels.model, 'model', 'model'))
   }
 
-  options.push(actionOption(labels.category, 'category', 'category', {
-    children: categoryChildren,
-  }))
+  if (categoryChildren && categoryChildren.length > 0) {
+    options.push(actionOption(labels.category, 'category', 'category', {
+      children: categoryChildren,
+    }))
+  }
   options.push(actionOption(labels.export, 'export', 'export', {
     children: [
       {

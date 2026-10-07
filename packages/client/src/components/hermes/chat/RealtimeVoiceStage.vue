@@ -158,7 +158,7 @@ const agentDisplayName = computed(() => {
     grok: 'Grok',
     opencode: 'OpenCode',
     dsh: 'DeepSeek Harness',
-    'ekko-agent': 'Ekko',
+    'ekko-agent': 'Hermes',
   }[agent] || agent
 })
 const statusLabel = computed(() => t(`realtimeVoice.status.${mode.value}`, {

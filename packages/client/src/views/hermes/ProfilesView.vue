@@ -1,4 +1,5 @@
 <script setup lang="ts">
+defineOptions({ name: "ProfilesView" })
 import PageLoading from '@/components/common/PageLoading.vue'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import { ref, onMounted } from 'vue'

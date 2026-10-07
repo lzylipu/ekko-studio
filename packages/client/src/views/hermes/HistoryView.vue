@@ -1,4 +1,5 @@
 <script setup lang="ts">
+defineOptions({ name: "HistoryView" })
 import PageSidebar from "@/components/layout/PageSidebar.vue"
 import { usePageSidebarState } from "@/composables/usePageSidebar"
 import PageLoading from '@/components/common/PageLoading.vue'

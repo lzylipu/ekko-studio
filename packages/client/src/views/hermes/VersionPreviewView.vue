@@ -1,4 +1,5 @@
 <script setup lang="ts">
+defineOptions({ name: "VersionPreviewView" })
 import PageLoading from '@/components/common/PageLoading.vue'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import { useI18n } from 'vue-i18n'

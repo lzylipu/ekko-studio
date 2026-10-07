@@ -70,7 +70,6 @@ const router = createRouter({
       path: '/hermes/jobs',
       name: 'hermes.jobs',
       component: () => import('@/views/hermes/JobsView.vue'),
-      meta: { hermesConfig: true },
     },
     {
       path: '/hermes/kanban',

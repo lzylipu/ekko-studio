@@ -1,4 +1,5 @@
 <script setup lang="ts">
+defineOptions({ name: "ThemeView" })
 import PageHeader from '@/components/layout/PageHeader.vue'
 import { computed, ref } from 'vue'
 import { NButton, NInputNumber, NSelect, useMessage } from 'naive-ui'

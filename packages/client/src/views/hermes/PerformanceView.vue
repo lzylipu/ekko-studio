@@ -1,4 +1,5 @@
 <script setup lang="ts">
+defineOptions({ name: "PerformanceView" })
 import PageLoading from '@/components/common/PageLoading.vue'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'

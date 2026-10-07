@@ -83,6 +83,26 @@ function handleSidebarClick(event: MouseEvent) {
       </RouteLinkItem>
       <RouteLinkItem
         class="nav-item"
+        :to="{ name: 'hermes.jobs' }"
+        :active="selectedKey === 'hermes.jobs'"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="9" />
+          <polyline points="12 7 12 12 15.5 14" />
+        </svg>
+        <span>{{ t("sidebar.jobs") }}</span>
+      </RouteLinkItem>
+      <RouteLinkItem
+        class="nav-item"
         :to="{ name: 'hermes.usage' }"
         :active="selectedKey === 'hermes.usage'"
       >

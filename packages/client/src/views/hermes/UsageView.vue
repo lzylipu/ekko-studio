@@ -1,4 +1,5 @@
 <script setup lang="ts">
+defineOptions({ name: "UsageView" })
 import PageLoading from '@/components/common/PageLoading.vue'
 import PageHeader from '@/components/layout/PageHeader.vue'
 import HeaderActionOverflow from '@/components/layout/HeaderActionOverflow.vue'
