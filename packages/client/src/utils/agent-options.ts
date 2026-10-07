@@ -1,4 +1,5 @@
-// Keep every Agent picker in the same order as single chat.
+// Agent 管理 里只保留 hermes，其他全部屏蔽
+// 其他所有 agent 相关代码已删除/屏蔽
 export const AGENT_OPTIONS = [
   { label: 'Hermes', value: 'hermes' },
 ] as const

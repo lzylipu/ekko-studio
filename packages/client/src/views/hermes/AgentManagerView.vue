@@ -39,64 +39,7 @@ interface CodingAgentCard {
   packageName: string
 }
 
-const codingAgents: CodingAgentCard[] = [
-  {
-    id: 'claude-code',
-    name: 'Claude',
-    provider: 'Anthropic',
-    logo: '/coding-agents/claude-code.svg',
-    command: 'claude',
-    packageName: '@anthropic-ai/claude-code',
-  },
-  {
-    id: 'codex',
-    name: 'Codex',
-    provider: 'OpenAI',
-    logo: '/coding-agents/codex-openai.png',
-    command: 'codex',
-    packageName: '@openai/codex',
-  },
-  {
-    id: 'pi',
-    name: 'Pi',
-    provider: 'Pi',
-    logo: '/coding-agents/pi.svg',
-    command: 'pi',
-    packageName: '@earendil-works/pi-coding-agent',
-  },
-  {
-    id: 'grok',
-    name: 'Grok',
-    provider: 'xAI',
-    logo: '/coding-agents/grok.svg',
-    command: 'grok',
-    packageName: '@xai-official/grok',
-  },
-  {
-    id: 'opencode',
-    name: 'OpenCode',
-    provider: 'OpenCode',
-    logo: '/coding-agents/opencode.png',
-    command: 'opencode',
-    packageName: 'opencode-ai',
-  },
-  { id: 'dsh', name: 'DeepSeek Harness', provider: 'DeepSeek', logo: '/coding-agents/deepseek.svg', command: 'dsh', packageName: '@deepseek-ai/dsh' },
-  {
-    id: 'cursor',
-    name: 'Cursor',
-    provider: 'Cursor',
-    logo: '/coding-agents/cursor-logo.png',
-    command: 'agent',
-    packageName: 'cursor-agent',
-  },
-  { id: 'antigravity', name: 'Antigravity', provider: 'Google', logo: '/coding-agents/antigravity.png', command: 'agy', packageName: '' },
-  { id: 'qwen', name: 'Qwen Code', provider: 'Alibaba', logo: '/coding-agents/qwen-logo.svg', command: 'qwen', packageName: '@qwen-code/qwen-code' },
-  { id: 'kimi', name: 'Kimi Code', provider: 'Moonshot AI', logo: '/coding-agents/kimi-logo.png', command: 'kimi', packageName: '@moonshot-ai/kimi-code' },
-  { id: 'codebuddy', name: 'CodeBuddy', provider: 'Tencent', logo: '/coding-agents/codebuddy-logo.svg', command: 'codebuddy', packageName: '@tencent-ai/codebuddy-code' },
-  { id: 'qoder', name: 'Qoder', provider: 'Qoder', logo: '/coding-agents/qoder-logo.svg', command: 'qoder', packageName: '@qoder-ai/qodercli' },
-  { id: 'copilot', name: 'GitHub Copilot', provider: 'GitHub', logo: '/coding-agents/copilot-logo.svg', command: 'copilot', packageName: '@github/copilot' },
-  { id: 'zcode', name: 'ZCode', provider: 'Z.ai', logo: '/coding-agents/zcode-logo.png', command: 'zcode', packageName: '' },
-]
+const codingAgents: CodingAgentCard[] = []
 
 const updatePolicies = ref<Record<string, AgentUpdatePolicyState>>({})
 let policyTimer: ReturnType<typeof setInterval> | undefined
