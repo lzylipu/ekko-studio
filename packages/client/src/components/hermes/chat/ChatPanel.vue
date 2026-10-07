@@ -1318,7 +1318,7 @@ async function confirmNewChat() {
       // Reuse the server inventory; probing every CLI's version delays creation.
       const status = await fetchAgentAvailabilitySnapshot();
       if (agentInstallationState(status, agentId) !== "installed") {
-        const agentName = newChatAgentOptions.value.find(option => option.value === agentId)?.label || agentId;
+        const agentName = newChatAgentOptions.value.find((option) => String(option.value) === String(agentId))?.label || agentId;
         message.warning(t("codingAgents.installRequired", { agent: agentName }));
         showNewChatModal.value = false;
         await router.push({ name: "hermes.agentManager" });
