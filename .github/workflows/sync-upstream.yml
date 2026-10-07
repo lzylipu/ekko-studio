@@ -1,0 +1,61 @@
+name: Sync upstream (ekko-studio)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */6 * * *"   # 每 6 小时检查一次上游更新
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout fork (hermes-only)
+        uses: actions/checkout@v4
+        with:
+          ref: hermes-only
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config user.name "lzylipu-bot"
+          git config user.email "lzylipu-bot@users.noreply.github.com"
+          git config pull.rebase false
+
+      - name: Add upstream and fetch
+        run: |
+          git remote add upstream https://github.com/EKKOLearnAI/ekko-studio.git
+          git fetch upstream main
+
+      # 备份本 fork 的 3 处定制文件，避免被上游 merge 覆盖
+      - name: Backup local customizations
+        run: |
+          mkdir -p /tmp/hermes-custom
+          cp config/agents.json /tmp/hermes-custom/ 2>/dev/null || true
+          cp packages/client/src/utils/agent-options.ts /tmp/hermes-custom/ 2>/dev/null || true
+          cp packages/client/src/components/hermes/chat/ChatPanel.vue /tmp/hermes-custom/ 2>/dev/null || true
+
+      # 合并上游 main，允许冲突继续（不因冲突中断）
+      - name: Merge upstream main
+        run: |
+          git merge --no-edit upstream/main || echo "merge had conflicts, will restore custom files below"
+
+      # 同步后强制恢复本 fork 的定制文件（保留 hermes-only 修改）
+      - name: Restore local customizations
+        run: |
+          if [ -f /tmp/hermes-custom/agents.json ]; then cp /tmp/hermes-custom/agents.json config/agents.json; fi
+          if [ -f /tmp/hermes-custom/agent-options.ts ]; then cp /tmp/hermes-custom/agent-options.ts packages/client/src/utils/agent-options.ts; fi
+          if [ -f /tmp/hermes-custom/ChatPanel.vue ]; then cp /tmp/hermes-custom/ChatPanel.vue packages/client/src/components/hermes/chat/ChatPanel.vue; fi
+
+      - name: Commit and push hermes-only
+        run: |
+          git add -A
+          git diff --cached --quiet || git commit -m "sync: merge upstream into hermes-only, keep hermes-only customizations"
+          git push origin hermes-only
