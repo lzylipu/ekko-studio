@@ -12,7 +12,9 @@ const props = withDefaults(defineProps<{
 }>(), {
   agent: () => ({ label: 'Hermes', src: '/coding-agents/hermes.png' }),
 })
-const isEkko = computed(() => /hermes\.png/.test(props.agent.src))
+// 全项目已去 Ekko 品牌，统一为 Hermes；思考中头像直接显示该 agent 的静态 logo，
+// 不再走 ekko 品牌动画分支。
+const isEkko = computed(() => false)
 
 const { t } = useI18n()
 const reasoningBody = ref<HTMLElement | null>(null)
