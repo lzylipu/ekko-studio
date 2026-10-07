@@ -34,6 +34,10 @@ RUN npm ci --ignore-scripts && npm rebuild node-pty
 
 COPY . .
 
+# Git checkout may lose exec bits (DIND/volume mounts); restore runtime scripts
+RUN chmod +x /app/bin/start-studio-all.sh /app/bin/*.mjs \
+    && chmod +x /app/bin/browser/* 2>/dev/null || true
+
 RUN npm run build && npm prune --omit=dev
 RUN npm run verify:sharp-runtime
 
