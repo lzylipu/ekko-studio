@@ -130,7 +130,11 @@ function isDesktopRuntime(): boolean {
 }
 
 function candidateBundledMcpScripts(): string[] {
+  const hermesHomeBin = process.env.HERMES_HOME
+    ? join(process.env.HERMES_HOME, 'bin/ekko-studio-mcp.mjs')
+    : ''
   return [
+    hermesHomeBin || '',
     process.env.HERMES_WEB_UI_MCP_BIN,
     join(process.cwd(), 'bin/ekko-studio-mcp.mjs'),
     join(__dirname, '../../bin/ekko-studio-mcp.mjs'),
@@ -159,7 +163,16 @@ function managedCommandConfig(
   // PATH even though the bundled .mjs script exists on disk.  Desktop provides
   // HERMES_AGENT_NODE for the packaged runtime node; fall back to process.execPath.
   if (bundledScript) {
-    return { command: runtimeNodePath() || process.execPath, args: [bundledScript, toolset] }
+    // In a multi-container deployment (separate hermes gateway + webui containers)
+    // the MCP launcher lives in the shared HERMES_HOME volume so both containers
+    // can resolve it through their own HERMES_HOME. Persist the ${HERMES_HOME}
+    // form (the gateway expands it with expandvars) instead of this container's
+    // absolute path, which the gateway cannot see.
+    const home = process.env.HERMES_HOME
+    const script = (home && bundledScript.startsWith(home + '/'))
+      ? bundledScript.replace(home, '${HERMES_HOME}')
+      : bundledScript
+    return { command: runtimeNodePath() || process.execPath, args: [script, toolset] }
   }
 
   if (isDesktopRuntime()) {
