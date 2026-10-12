@@ -1,6 +1,6 @@
-import { existsSync, readFileSync, realpathSync, statSync } from 'node:fs'
+import { chmodSync, copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { dirname, join, resolve } from 'node:path'
+import { basename, dirname, join, resolve } from 'node:path'
 import { config } from '../../../studio/public/config'
 import { logger } from '../../../studio/public/logging'
 import { updateConfigYamlForProfile } from '../../../studio/public/profile-config'
@@ -147,6 +147,41 @@ function candidateBundledMcpScripts(): string[] {
 
 function bundledMcpScriptPath(): string | null {
   return candidateBundledMcpScripts().find(candidate => existsSync(candidate)) || null
+}
+
+/**
+ * Multi-container deployment (separate hermes gateway + webui containers) mounts
+ * the SAME shared HERMES_HOME volume at different paths (gateway /opt/data,
+ * webui /home/agent/.hermes). The bundled launcher ships inside the webui image
+ * at /app/bin, invisible to the gateway. So when the resolved script is NOT
+ * already inside HERMES_HOME, copy it (with its browser/ deps) into
+ * HERMES_HOME/bin so the gateway resolves it via ${HERMES_HOME} expandvars.
+ * A fresh deployment self-heals on first autoinject: no manual copy needed.
+ */
+function ensureBundledScriptInSharedHome(bundledScript: string | null): string | null {
+  const home = process.env.HERMES_HOME
+  if (!home || !bundledScript) return bundledScript
+  if (bundledScript.startsWith(home + '/')) return bundledScript // already shared
+  try {
+    const destDir = join(home, 'bin')
+    const destFile = join(destDir, basename(bundledScript))
+    mkdirSync(destDir, { recursive: true })
+    copyFileSync(bundledScript, destFile)
+    chmodSync(destFile, 0o755)
+    const browserSrc = join(dirname(bundledScript), 'browser')
+    if (existsSync(browserSrc)) {
+      const browserDest = join(destDir, 'browser')
+      mkdirSync(browserDest, { recursive: true })
+      for (const f of readdirSync(browserSrc)) {
+        copyFileSync(join(browserSrc, f), join(browserDest, f))
+      }
+    }
+    logger.info({ from: bundledScript, to: destFile }, '[mcp-autoinject] copied bundled MCP launcher into shared HERMES_HOME/bin')
+    return destFile
+  } catch (err) {
+    logger.warn({ err, bundledScript }, '[mcp-autoinject] could not copy MCP launcher into HERMES_HOME; using original path')
+    return bundledScript
+  }
 }
 
 function runtimeNodePath(): string | null {
@@ -346,7 +381,7 @@ async function injectIntoProfile(
 }
 
 export async function injectBundledMcpServer(): Promise<BundledMcpInjectionResult> {
-  const bundledScript = bundledMcpScriptPath()
+  const bundledScript = ensureBundledScriptInSharedHome(bundledMcpScriptPath())
   const commandInfo = managedConfig(
     'default',
     MANAGED_SERVERS[0].name,
