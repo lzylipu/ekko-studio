@@ -44,7 +44,10 @@ jobs:
           done < /tmp/custom_files.txt
 
       - name: Merge upstream
-        run: git merge --no-edit upstream/main
+        run: |
+          # Upstream wins while merging overlapping changes. The next step
+          # restores every fork-customized file from the saved snapshot.
+          git merge --no-edit -X theirs upstream/main
 
       - name: Restore local customizations
         run: |
