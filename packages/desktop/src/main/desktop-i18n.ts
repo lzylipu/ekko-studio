@@ -34,6 +34,10 @@ type TranslationKey =
   | 'update.noUpdateInfoMessage'
   | 'update.packagedOnlyMessage'
   | 'desktop.startingLocalServices'
+  | 'desktop.connectingRemoteServices'
+  | 'desktop.failedConnectRemote'
+  | 'desktop.returnLocal'
+  | 'desktop.switchDeviceFailed'
   | 'desktop.selectRuntimeSource'
   | 'desktop.downloadFailed'
   | 'desktop.downloadCloudflareTitle'
@@ -98,6 +102,10 @@ const translations: Record<DesktopLocale, Record<TranslationKey, string>> = {
     'update.noUpdateInfoMessage': 'Update information is not available for this platform yet.',
     'update.packagedOnlyMessage': 'Automatic updates are only available in the packaged desktop app.',
     'desktop.startingLocalServices': 'Starting local services...',
+    'desktop.connectingRemoteServices': 'Connecting to the remote server...',
+    'desktop.failedConnectRemote': 'Could not connect to the remote server',
+    'desktop.returnLocal': "Switch to this computer (restart)",
+    'desktop.switchDeviceFailed': "Could not switch devices. Please try again.",
     'desktop.selectRuntimeSource': 'Select a runtime download source to start local services.',
     'desktop.downloadFailed': 'Download failed',
     'desktop.downloadCloudflareTitle': 'Download from Cloudflare',
@@ -159,6 +167,10 @@ const translations: Record<DesktopLocale, Record<TranslationKey, string>> = {
     'update.noUpdateInfoMessage': '当前平台的更新信息暂不可用。',
     'update.packagedOnlyMessage': '自动更新仅在打包后的桌面应用中可用。',
     'desktop.startingLocalServices': '正在启动本地服务...',
+    'desktop.connectingRemoteServices': '正在连接远程服务器...',
+    'desktop.failedConnectRemote': '无法连接远程服务器',
+    'desktop.returnLocal': "切换回本机（重启）",
+    'desktop.switchDeviceFailed': "切换设备失败，请重试。",
     'desktop.selectRuntimeSource': '请选择运行时下载源以启动本地服务。',
     'desktop.downloadFailed': '下载失败',
     'desktop.downloadCloudflareTitle': '从 Cloudflare 下载',
@@ -220,6 +232,10 @@ const translations: Record<DesktopLocale, Record<TranslationKey, string>> = {
     'update.noUpdateInfoMessage': '目前平台的更新資訊暫不可用。',
     'update.packagedOnlyMessage': '自動更新僅可在打包後的桌面應用中使用。',
     'desktop.startingLocalServices': '正在啟動本地服務...',
+    'desktop.connectingRemoteServices': '正在連線遠端伺服器...',
+    'desktop.failedConnectRemote': '無法連線遠端伺服器',
+    'desktop.returnLocal': "切換回本機（重新啟動）",
+    'desktop.switchDeviceFailed': "切換裝置失敗，請重試。",
     'desktop.selectRuntimeSource': '請選擇運行時下載來源以啟動本地服務。',
     'desktop.downloadFailed': '下載失敗',
     'desktop.downloadCloudflareTitle': '從 Cloudflare 下載',
@@ -281,6 +297,10 @@ const translations: Record<DesktopLocale, Record<TranslationKey, string>> = {
     'update.noUpdateInfoMessage': 'このプラットフォームのアップデート情報はまだ利用できません。',
     'update.packagedOnlyMessage': '自動アップデートはパッケージ版デスクトップアプリでのみ利用できます。',
     'desktop.startingLocalServices': 'ローカルサービスを起動しています...',
+    'desktop.connectingRemoteServices': 'リモートサーバーに接続しています...',
+    'desktop.failedConnectRemote': 'リモートサーバーに接続できません',
+    'desktop.returnLocal': "このコンピューターに切り替え（再起動）",
+    'desktop.switchDeviceFailed': "デバイスを切り替えられませんでした。もう一度お試しください。",
     'desktop.selectRuntimeSource': 'ローカルサービスを開始するためのランタイムダウンロード元を選択してください。',
     'desktop.downloadFailed': 'ダウンロードに失敗しました',
     'desktop.downloadCloudflareTitle': 'Cloudflare からダウンロード',
@@ -342,6 +362,10 @@ const translations: Record<DesktopLocale, Record<TranslationKey, string>> = {
     'update.noUpdateInfoMessage': '이 플랫폼의 업데이트 정보를 아직 사용할 수 없습니다.',
     'update.packagedOnlyMessage': '자동 업데이트는 패키징된 데스크톱 앱에서만 사용할 수 있습니다.',
     'desktop.startingLocalServices': '로컬 서비스를 시작하는 중...',
+    'desktop.connectingRemoteServices': '원격 서버에 연결하는 중...',
+    'desktop.failedConnectRemote': '원격 서버에 연결할 수 없습니다',
+    'desktop.returnLocal': "이 컴퓨터로 전환 (다시 시작)",
+    'desktop.switchDeviceFailed': "기기를 전환하지 못했습니다. 다시 시도하세요.",
     'desktop.selectRuntimeSource': '로컬 서비스를 시작할 런타임 다운로드 소스를 선택하세요.',
     'desktop.downloadFailed': '다운로드 실패',
     'desktop.downloadCloudflareTitle': 'Cloudflare에서 다운로드',
@@ -403,6 +427,10 @@ const translations: Record<DesktopLocale, Record<TranslationKey, string>> = {
     'update.noUpdateInfoMessage': 'Les informations de mise a jour ne sont pas encore disponibles pour cette plateforme.',
     'update.packagedOnlyMessage': 'Les mises a jour automatiques ne sont disponibles que dans l application de bureau packagee.',
     'desktop.startingLocalServices': 'Demarrage des services locaux...',
+    'desktop.connectingRemoteServices': 'Connexion au serveur distant...',
+    'desktop.failedConnectRemote': 'Impossible de se connecter au serveur distant',
+    'desktop.returnLocal': "Passer à cet ordinateur (redémarrer)",
+    'desktop.switchDeviceFailed': "Impossible de changer d’appareil. Réessayez.",
     'desktop.selectRuntimeSource': 'Selectionnez une source de telechargement du runtime pour demarrer les services locaux.',
     'desktop.downloadFailed': 'Echec du telechargement',
     'desktop.downloadCloudflareTitle': 'Telecharger depuis Cloudflare',
@@ -464,6 +492,10 @@ const translations: Record<DesktopLocale, Record<TranslationKey, string>> = {
     'update.noUpdateInfoMessage': 'La informacion de actualizacion aun no esta disponible para esta plataforma.',
     'update.packagedOnlyMessage': 'Las actualizaciones automaticas solo estan disponibles en la app de escritorio empaquetada.',
     'desktop.startingLocalServices': 'Iniciando servicios locales...',
+    'desktop.connectingRemoteServices': 'Conectando al servidor remoto...',
+    'desktop.failedConnectRemote': 'No se pudo conectar al servidor remoto',
+    'desktop.returnLocal': "Cambiar a este equipo (reiniciar)",
+    'desktop.switchDeviceFailed': "No se pudo cambiar de dispositivo. Inténtalo de nuevo.",
     'desktop.selectRuntimeSource': 'Selecciona una fuente de descarga del runtime para iniciar los servicios locales.',
     'desktop.downloadFailed': 'Error de descarga',
     'desktop.downloadCloudflareTitle': 'Descargar desde Cloudflare',
@@ -525,6 +557,10 @@ const translations: Record<DesktopLocale, Record<TranslationKey, string>> = {
     'update.noUpdateInfoMessage': 'Update-Informationen sind fur diese Plattform noch nicht verfugbar.',
     'update.packagedOnlyMessage': 'Automatische Updates sind nur in der paketierten Desktop-App verfugbar.',
     'desktop.startingLocalServices': 'Lokale Dienste werden gestartet...',
+    'desktop.connectingRemoteServices': 'Verbindung zum Remote-Server wird hergestellt...',
+    'desktop.failedConnectRemote': 'Verbindung zum Remote-Server fehlgeschlagen',
+    'desktop.returnLocal': "Zu diesem Computer wechseln (Neustart)",
+    'desktop.switchDeviceFailed': "Gerätewechsel fehlgeschlagen. Bitte erneut versuchen.",
     'desktop.selectRuntimeSource': 'Wahlen Sie eine Runtime-Downloadquelle aus, um lokale Dienste zu starten.',
     'desktop.downloadFailed': 'Download fehlgeschlagen',
     'desktop.downloadCloudflareTitle': 'Von Cloudflare herunterladen',
@@ -586,6 +622,10 @@ const translations: Record<DesktopLocale, Record<TranslationKey, string>> = {
     'update.noUpdateInfoMessage': 'As informacoes de atualizacao ainda nao estao disponiveis para esta plataforma.',
     'update.packagedOnlyMessage': 'Atualizacoes automaticas estao disponiveis apenas no app desktop empacotado.',
     'desktop.startingLocalServices': 'Iniciando servicos locais...',
+    'desktop.connectingRemoteServices': 'Conectando ao servidor remoto...',
+    'desktop.failedConnectRemote': 'Não foi possível conectar ao servidor remoto',
+    'desktop.returnLocal': "Mudar para este computador (reiniciar)",
+    'desktop.switchDeviceFailed': "Não foi possível mudar de dispositivo. Tente novamente.",
     'desktop.selectRuntimeSource': 'Selecione uma fonte de download do runtime para iniciar os servicos locais.',
     'desktop.downloadFailed': 'Falha no download',
     'desktop.downloadCloudflareTitle': 'Baixar pelo Cloudflare',
@@ -617,7 +657,7 @@ const translations: Record<DesktopLocale, Record<TranslationKey, string>> = {
   },
 }
 
-function resolveLocale(): DesktopLocale {
+export function desktopLocale(): DesktopLocale {
   const tag = app.getLocale()
   const lower = tag.toLowerCase()
   if (lower.startsWith('zh')) {
@@ -631,7 +671,7 @@ function resolveLocale(): DesktopLocale {
 }
 
 export function t(key: TranslationKey, params: Record<string, string> = {}): string {
-  const message = translations[resolveLocale()][key] || translations.en[key]
+  const message = translations[desktopLocale()][key] || translations.en[key]
   return Object.entries(params).reduce(
     (value, [name, replacement]) => value.replaceAll(`{${name}}`, replacement),
     message,

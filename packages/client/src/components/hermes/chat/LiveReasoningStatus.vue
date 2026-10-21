@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { deploymentUrl } from '@/utils/deployment-url'
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import thinkingImage from '@/assets/thinking.gif'
@@ -9,8 +10,9 @@ const props = withDefaults(defineProps<{
   reasoningId?: string | number | null
   elapsed: string
   agent?: ChatAgentAvatar
+  deploymentSessionId?: string
 }>(), {
-  agent: () => ({ label: 'Hermes', src: '/coding-agents/hermes.png' }),
+  agent: () => ({ label: 'Hermes', src: deploymentUrl('/coding-agents/hermes.png') }),
 })
 // 全项目已去 Ekko 品牌，统一为 Hermes；思考中头像直接显示该 agent 的静态 logo，
 // 不再走 ekko 品牌动画分支。
@@ -74,10 +76,15 @@ onBeforeUnmount(() => cancelAnimationFrame(scrollFrame))
   <div class="live-reasoning-status">
     <div class="thinking-status">
       <img
+        :key="isEkko ? thinkingImage : agent.src"
         :src="isEkko ? thinkingImage : agent.src"
+        data-agent-deployment-image="pending"
+        @load="($event.target as HTMLImageElement).dataset.agentDeploymentImage = 'ready'"
+        @error="($event.target as HTMLImageElement).dataset.agentDeploymentImage = 'error'"
         alt=""
         aria-hidden="true"
         class="thinking-avatar"
+        :data-agent-deployment-target="deploymentSessionId || ''"
         :class="isEkko ? 'thinking-avatar--animated' : 'thinking-avatar--logo'"
       >
       <div class="thinking-status-copy">
@@ -107,7 +114,7 @@ onBeforeUnmount(() => cancelAnimationFrame(scrollFrame))
   flex-direction: column;
   align-items: flex-start;
   flex: 0 0 78px;
-  gap: 8px;
+  gap: calc(8px * var(--spacing-scale, 1));
   width: 100%;
   max-width: 100%;
   height: 78px;
@@ -120,7 +127,7 @@ onBeforeUnmount(() => cancelAnimationFrame(scrollFrame))
 .thinking-status {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: calc(10px * var(--spacing-scale, 1));
   width: 100%;
   min-width: 0;
   height: 40px;
@@ -145,7 +152,7 @@ onBeforeUnmount(() => cancelAnimationFrame(scrollFrame))
 
 .thinking-avatar--logo {
   box-sizing: border-box;
-  padding: 5px;
+  padding: calc(5px * var(--spacing-scale, 1));
   object-fit: contain;
   background: #fff;
 }
@@ -154,8 +161,8 @@ onBeforeUnmount(() => cancelAnimationFrame(scrollFrame))
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
-  column-gap: 8px;
-  row-gap: 2px;
+  column-gap: calc(8px * var(--spacing-scale, 1));
+  row-gap: calc(2px * var(--spacing-scale, 1));
   min-width: 0;
   height: 20px;
   min-height: 20px;
@@ -172,9 +179,9 @@ onBeforeUnmount(() => cancelAnimationFrame(scrollFrame))
   background-position: 0% 0;
   -webkit-background-clip: text;
   background-clip: text;
-  font-size: 15px;
+  font-size: calc(var(--font-size-base, 14px) * 15 / 14);
   font-weight: 600;
-  line-height: 20px;
+  line-height: var(--line-height, calc(var(--font-size-base, 14px) * 20 / 14));
   animation: thinking-label-shimmer 2.2s linear infinite;
   backface-visibility: hidden;
   contain: paint;
@@ -196,10 +203,10 @@ onBeforeUnmount(() => cancelAnimationFrame(scrollFrame))
   align-items: center;
   margin-top: 2px;
   color: $text-muted;
-  font-family: $font-code;
-  font-size: 13px;
+  font-family: var(--font-code, $font-code);
+  font-size: calc(var(--font-size-base, 14px) * 13 / 14);
   font-variant-numeric: tabular-nums;
-  line-height: 20px;
+  line-height: var(--line-height, calc(var(--font-size-base, 14px) * 20 / 14));
   min-width: 44px;
 }
 
@@ -207,7 +214,7 @@ onBeforeUnmount(() => cancelAnimationFrame(scrollFrame))
   display: flex;
   align-items: center;
   flex: 0 0 30px;
-  gap: 8px;
+  gap: calc(8px * var(--spacing-scale, 1));
   width: 520px;
   max-width: 100%;
   height: 30px;
@@ -215,7 +222,7 @@ onBeforeUnmount(() => cancelAnimationFrame(scrollFrame))
   max-height: 30px;
   min-width: 0;
   box-sizing: border-box;
-  padding: 5px 10px;
+  padding: calc(5px * var(--spacing-scale, 1)) calc(10px * var(--spacing-scale, 1));
   border-radius: $radius-sm;
   background: rgba(0, 0, 0, 0.025);
   color: $text-secondary;
@@ -236,9 +243,9 @@ onBeforeUnmount(() => cancelAnimationFrame(scrollFrame))
   display: flex;
   align-items: center;
   flex: 0 0 auto;
-  gap: 5px;
+  gap: calc(5px * var(--spacing-scale, 1));
   color: $text-muted;
-  font-size: 11px;
+  font-size: calc(var(--font-size-base, 14px) * 11 / 14);
   font-weight: 500;
 }
 
@@ -249,8 +256,8 @@ onBeforeUnmount(() => cancelAnimationFrame(scrollFrame))
   overflow-y: hidden;
   white-space: nowrap;
   text-overflow: clip;
-  font-size: 13px;
-  line-height: 20px;
+  font-size: calc(var(--font-size-base, 14px) * 13 / 14);
+  line-height: var(--line-height, calc(var(--font-size-base, 14px) * 20 / 14));
   opacity: 0.9;
   scrollbar-width: none;
 
