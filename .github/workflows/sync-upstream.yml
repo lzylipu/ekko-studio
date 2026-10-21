@@ -31,9 +31,16 @@ jobs:
           git config pull.rebase false
 
       - name: Snapshot local customizations
+        id: upstream
         run: |
           git remote add upstream https://github.com/EKKOLearnAI/ekko-studio.git || true
           git fetch upstream main
+          if git merge-base --is-ancestor upstream/main HEAD; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "上游没有新提交，跳过合并和镜像构建。"
+            exit 0
+          fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
           git diff --name-only $(git merge-base upstream/main HEAD)..HEAD > /tmp/custom_files.txt
           mkdir -p /tmp/hermes-custom
           while IFS= read -r f; do
@@ -44,12 +51,14 @@ jobs:
           done < /tmp/custom_files.txt
 
       - name: Merge upstream
+        if: steps.upstream.outputs.changed == 'true'
         run: |
           # Upstream wins while merging overlapping changes. The next step
           # restores every fork-customized file from the saved snapshot.
           git merge --no-edit -X theirs upstream/main
 
       - name: Restore local customizations
+        if: steps.upstream.outputs.changed == 'true'
         run: |
           while IFS= read -r f; do
             if [ -f "/tmp/hermes-custom/$f" ]; then
@@ -61,6 +70,7 @@ jobs:
           git diff --cached --quiet || git commit -m "sync: merge upstream into hermes-only, keep local customizations"
 
       - name: Push merged commits
+        if: steps.upstream.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.PUSH_TOKEN }}
         run: |
