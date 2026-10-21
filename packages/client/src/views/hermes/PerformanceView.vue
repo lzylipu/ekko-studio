@@ -223,7 +223,7 @@ onBeforeUnmount(() => {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: calc(8px * var(--spacing-scale, 1));
+  gap: 8px;
 }
 
 .performance-spin {
@@ -234,29 +234,29 @@ onBeforeUnmount(() => {
 .performance-content {
   height: 100%;
   overflow-y: auto;
-  padding: calc(20px * var(--spacing-scale, 1));
+  padding: 20px;
 }
 
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: calc(12px * var(--spacing-scale, 1));
+  gap: 12px;
   margin-bottom: 16px;
 }
 
 .summary-item,
 .runtime-section {
-  border: var(--border-width, 1px) solid $border-color;
+  border: 1px solid $border-color;
   border-radius: $radius-sm;
-  background: var(--theme-card-bg, $bg-card);
+  background: $bg-card;
 }
 
 .summary-item {
   min-height: 108px;
-  padding: calc(14px * var(--spacing-scale, 1));
+  padding: 14px;
   display: flex;
   flex-direction: column;
-  gap: calc(8px * var(--spacing-scale, 1));
+  gap: 8px;
 }
 
 .summary-label,
@@ -264,12 +264,12 @@ onBeforeUnmount(() => {
 .section-header span,
 .process-row div span {
   color: $text-muted;
-  font-size: calc(var(--font-size-base, 14px) * 12 / 14);
+  font-size: 12px;
 }
 
 .summary-item strong {
   color: $text-primary;
-  font-size: calc(var(--font-size-base, 14px) * 24 / 14);
+  font-size: 24px;
   font-weight: 650;
 }
 
@@ -294,17 +294,17 @@ onBeforeUnmount(() => {
 
 .section-header {
   min-height: 46px;
-  padding: calc(12px * var(--spacing-scale, 1)) calc(14px * var(--spacing-scale, 1));
+  padding: 12px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: calc(12px * var(--spacing-scale, 1));
-  border-bottom: var(--border-width, 1px) solid $border-light;
+  gap: 12px;
+  border-bottom: 1px solid $border-light;
 
   h3 {
     margin: 0;
     color: $text-primary;
-    font-size: calc(var(--font-size-base, 14px) * 14 / 14);
+    font-size: 14px;
     font-weight: 600;
   }
 }
@@ -316,14 +316,14 @@ onBeforeUnmount(() => {
 
 .process-row {
   min-height: 56px;
-  padding: calc(10px * var(--spacing-scale, 1)) calc(14px * var(--spacing-scale, 1));
+  padding: 10px 14px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 80px 110px 86px;
   align-items: center;
-  gap: calc(12px * var(--spacing-scale, 1));
-  border-bottom: var(--border-width, 1px) solid $border-light;
+  gap: 12px;
+  border-bottom: 1px solid $border-light;
   color: $text-secondary;
-  font-size: calc(var(--font-size-base, 14px) * 13 / 14);
+  font-size: 13px;
 
   &:last-child {
     border-bottom: 0;
@@ -333,12 +333,12 @@ onBeforeUnmount(() => {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: calc(3px * var(--spacing-scale, 1));
+    gap: 3px;
   }
 
   strong {
     color: $text-primary;
-    font-size: calc(var(--font-size-base, 14px) * 13 / 14);
+    font-size: 13px;
   }
 
   span {
@@ -351,11 +351,11 @@ onBeforeUnmount(() => {
 .status {
   width: fit-content;
   max-width: 100%;
-  padding: calc(2px * var(--spacing-scale, 1)) calc(8px * var(--spacing-scale, 1));
-  border: var(--border-width, 1px) solid $border-color;
+  padding: 2px 8px;
+  border: 1px solid $border-color;
   border-radius: 999px;
   color: $text-muted;
-  font-size: calc(var(--font-size-base, 14px) * 12 / 14);
+  font-size: 12px;
 
   &.running {
     border-color: rgba(var(--success-rgb), 0.35);
@@ -365,10 +365,10 @@ onBeforeUnmount(() => {
 }
 
 .runtime-error {
-  padding: calc(10px * var(--spacing-scale, 1)) calc(14px * var(--spacing-scale, 1));
-  border-top: var(--border-width, 1px) solid $border-light;
+  padding: 10px 14px;
+  border-top: 1px solid $border-light;
   color: $error;
-  font-size: calc(var(--font-size-base, 14px) * 12 / 14);
+  font-size: 12px;
 }
 
 .worker-table-wrap {
@@ -380,19 +380,19 @@ onBeforeUnmount(() => {
   min-width: 760px;
   border-collapse: collapse;
   color: $text-secondary;
-  font-size: calc(var(--font-size-base, 14px) * 13 / 14);
+  font-size: 13px;
 
   th,
   td {
-    padding: calc(11px * var(--spacing-scale, 1)) calc(14px * var(--spacing-scale, 1));
-    border-bottom: var(--border-width, 1px) solid $border-light;
+    padding: 11px 14px;
+    border-bottom: 1px solid $border-light;
     text-align: start;
     white-space: nowrap;
   }
 
   th {
     color: $text-muted;
-    font-size: calc(var(--font-size-base, 14px) * 12 / 14);
+    font-size: 12px;
     font-weight: 600;
   }
 
@@ -413,7 +413,7 @@ onBeforeUnmount(() => {
 }
 
 .session-list {
-  padding: calc(6px * var(--spacing-scale, 1)) calc(14px * var(--spacing-scale, 1));
+  padding: 6px 14px;
 }
 
 .session-row {
@@ -421,10 +421,10 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: calc(12px * var(--spacing-scale, 1));
-  border-bottom: var(--border-width, 1px) solid $border-light;
+  gap: 12px;
+  border-bottom: 1px solid $border-light;
   color: $text-secondary;
-  font-size: calc(var(--font-size-base, 14px) * 13 / 14);
+  font-size: 13px;
 
   &:last-child {
     border-bottom: 0;
@@ -436,8 +436,8 @@ onBeforeUnmount(() => {
 }
 
 .session-empty {
-  padding: calc(18px * var(--spacing-scale, 1)) 0;
-  font-size: calc(var(--font-size-base, 14px) * 13 / 14);
+  padding: 18px 0;
+  font-size: 13px;
 }
 
 @media (max-width: 960px) {

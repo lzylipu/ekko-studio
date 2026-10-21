@@ -186,7 +186,7 @@ function arrowIcon(field: 'time' | 'name'): string {
 .jobs-top {
   flex: 1;
   overflow-y: auto;
-  padding: calc(20px * var(--spacing-scale, 1));
+  padding: 20px;
   min-height: 120px;
 }
 
@@ -205,18 +205,18 @@ function arrowIcon(field: 'time' | 'name'): string {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: calc(8px * var(--spacing-scale, 1));
+  gap: 8px;
 }
 
 .sort-toggle {
   display: flex;
-  gap: calc(4px * var(--spacing-scale, 1));
+  gap: 4px;
 }
 
 .sort-arrow {
   margin-inline-start: 4px;
-  font-size: calc(var(--font-size-base, 14px) * 11 / 14);
-  line-height: var(--line-height, 1);
+  font-size: 11px;
+  line-height: 1;
 }
 
 .sort-divider {

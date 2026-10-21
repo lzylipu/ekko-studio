@@ -1,7 +1,6 @@
 <script setup lang="ts">
 defineOptions({ name: "HistoryView" })
 import PageSidebar from "@/components/layout/PageSidebar.vue"
-import SidebarResizeHandle from "@/components/layout/SidebarResizeHandle.vue"
 import { usePageSidebarState } from "@/composables/usePageSidebar"
 import PageLoading from '@/components/common/PageLoading.vue'
 import PageHeader from '@/components/layout/PageHeader.vue'
@@ -858,7 +857,6 @@ function handleBatchDeleteConfirm() {
   <PageLoading :show="pageLoading" initial-only class="history-panel">
     <PageSidebar>
     <aside class="session-list" :class="{ collapsed: !showSessions }">
-      <SidebarResizeHandle />
       <div v-if="showSessions" class="page-sidebar-top">
         <PageSidebarNav active="history">
           <template #actions>
@@ -1094,7 +1092,7 @@ function handleBatchDeleteConfirm() {
   height: 100%;
   position: relative;
   overflow: hidden;
-  background: var(--theme-card-bg, $bg-card);
+  background: $bg-card;
 }
 
 .history-content-wrapper {
@@ -1113,13 +1111,12 @@ function handleBatchDeleteConfirm() {
 }
 
 .session-list {
-  position: relative;
   width: $sidebar-width;
   min-height: 0;
   align-self: stretch;
   margin: 0;
-  background: var(--theme-sidebar-bg, $bg-sidebar-surface);
-  border-inline-end: var(--border-width, 1px) solid $border-color;
+  background: $bg-sidebar-surface;
+  border-inline-end: 1px solid $border-color;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -1172,14 +1169,14 @@ function handleBatchDeleteConfirm() {
 
 .page-sidebar-top {
   flex-shrink: 0;
-  padding: calc(12px * var(--spacing-scale, 1));
+  padding: 12px;
 }
 
 .session-list-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: calc(8px * var(--spacing-scale, 1));
+  gap: 8px;
   margin-top: 8px;
 }
 
@@ -1187,14 +1184,14 @@ function handleBatchDeleteConfirm() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: calc(12px * var(--spacing-scale, 1));
+  padding: 12px;
   flex-shrink: 0;
 }
 
 .session-list-actions {
   display: flex;
   align-items: center;
-  gap: calc(4px * var(--spacing-scale, 1));
+  gap: 4px;
   height: 22px;
 
   .n-button { height: 22px; min-height: 22px; }
@@ -1210,7 +1207,7 @@ function handleBatchDeleteConfirm() {
   background: none;
   cursor: pointer;
   color: $text-secondary;
-  padding: calc(4px * var(--spacing-scale, 1));
+  padding: 4px;
   border-radius: $radius-sm;
 
   &:hover {
@@ -1220,15 +1217,15 @@ function handleBatchDeleteConfirm() {
 
 .session-selection-count {
   min-width: 0;
-  font-size: calc(var(--font-size-base, 14px) * 12 / 14);
+  font-size: 12px;
   color: $text-secondary;
 }
 
 .session-group-header {
   display: flex;
   align-items: center;
-  gap: calc(4px * var(--spacing-scale, 1));
-  padding: calc(6px * var(--spacing-scale, 1)) calc(10px * var(--spacing-scale, 1)) calc(4px * var(--spacing-scale, 1));
+  gap: 4px;
+  padding: 6px 10px 4px;
   cursor: pointer;
   user-select: none;
 
@@ -1253,7 +1250,7 @@ function handleBatchDeleteConfirm() {
 }
 
 .session-group-label {
-  font-size: calc(var(--font-size-base, 14px) * 10 / 14);
+  font-size: 10px;
   font-weight: 600;
   color: $text-muted;
   text-transform: uppercase;
@@ -1261,7 +1258,7 @@ function handleBatchDeleteConfirm() {
 }
 
 .session-group-count {
-  font-size: calc(var(--font-size-base, 14px) * 10 / 14);
+  font-size: 10px;
   color: $text-muted;
   font-weight: 400;
 }
@@ -1279,13 +1276,13 @@ function handleBatchDeleteConfirm() {
 .session-items {
   flex: 1;
   overflow-y: auto;
-  padding: 0 calc(6px * var(--spacing-scale, 1)) calc(12px * var(--spacing-scale, 1));
+  padding: 0 6px 12px;
 }
 
 .session-loading,
 .session-empty {
-  padding: calc(16px * var(--spacing-scale, 1)) calc(10px * var(--spacing-scale, 1));
-  font-size: calc(var(--font-size-base, 14px) * 12 / 14);
+  padding: 16px 10px;
+  font-size: 12px;
   color: $text-muted;
   text-align: center;
 }
@@ -1297,9 +1294,9 @@ function handleBatchDeleteConfirm() {
   overflow: hidden;
   min-width: 0;
   margin: 10px 10px 10px 0;
-  background: var(--theme-content-bg, $bg-main-surface);
-  border: var(--border-width, 1px) solid $border-color;
-  border-radius: var(--radius-component, 14px);
+  background: $bg-main-surface;
+  border: 1px solid $border-color;
+  border-radius: 14px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 
   &--sidebar-collapsed {
@@ -1311,15 +1308,15 @@ function handleBatchDeleteConfirm() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: calc(21px * var(--spacing-scale, 1)) calc(20px * var(--spacing-scale, 1));
-  border-bottom: var(--border-width, 1px) solid $border-color;
+  padding: 21px 20px;
+  border-bottom: 1px solid $border-color;
   flex-shrink: 0;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: calc(8px * var(--spacing-scale, 1));
+  gap: 8px;
   overflow: hidden;
   flex: 1;
   min-width: 0;
@@ -1330,10 +1327,10 @@ function handleBatchDeleteConfirm() {
 }
 
 .header-session-title {
-  font-size: calc(var(--font-size-base, 14px) * 16 / 14);
+  font-size: 16px;
   font-weight: 600;
   color: $text-primary;
-  line-height: var(--line-height, calc(var(--font-size-base, 14px) * 28 / 14));
+  line-height: 28px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1342,21 +1339,21 @@ function handleBatchDeleteConfirm() {
 .source-badge {
   display: inline-flex;
   align-items: center;
-  font-size: calc(var(--font-size-base, 14px) * 10 / 14);
+  font-size: 10px;
   color: $text-muted;
   background: rgba($text-muted, 0.12);
-  padding: calc(1px * var(--spacing-scale, 1)) calc(7px * var(--spacing-scale, 1));
-  border-radius: var(--radius-component, 8px);
+  padding: 1px 7px;
+  border-radius: 8px;
   flex-shrink: 0;
   white-space: nowrap;
   height: 18px;
-  line-height: var(--line-height, calc(var(--font-size-base, 14px) * 16 / 14));
+  line-height: 16px;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: calc(4px * var(--spacing-scale, 1));
+  gap: 4px;
   flex-shrink: 0;
 }
 
@@ -1369,7 +1366,7 @@ function handleBatchDeleteConfirm() {
   }
 
   .chat-header {
-    padding: calc(16px * var(--spacing-scale, 1)) calc(12px * var(--spacing-scale, 1)) calc(16px * var(--spacing-scale, 1)) 52px;
+    padding: 16px 12px 16px 52px;
   }
 
   .history-sidebar-toggle {

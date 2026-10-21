@@ -126,19 +126,19 @@ onMounted(() => {
         </NAlert>
 
         <div v-if="manifest" class="summary-grid">
-          <div class="summary-card" data-theme-surface="card">
+          <div class="summary-card">
             <span>{{ t('petdex.summary.total') }}</span>
             <strong>{{ manifest.total }}</strong>
           </div>
-          <div class="summary-card" data-theme-surface="card">
+          <div class="summary-card">
             <span>{{ t('petdex.summary.visible') }}</span>
             <strong>{{ filteredPets.length }}</strong>
           </div>
-          <div class="summary-card" data-theme-surface="card">
+          <div class="summary-card">
             <span>{{ t('petdex.summary.kinds') }}</span>
             <strong>{{ kindOptions.length }}</strong>
           </div>
-          <div class="summary-card wide" data-theme-surface="card">
+          <div class="summary-card wide">
             <span>{{ t('petdex.summary.generatedAt') }}</span>
             <strong>{{ generatedAt || '-' }}</strong>
           </div>
@@ -150,7 +150,7 @@ onMounted(() => {
         </div>
 
         <div v-if="visiblePets.length" class="pet-grid">
-          <article v-for="pet in visiblePets" :key="pet.slug" class="pet-card" data-theme-surface="card">
+          <article v-for="pet in visiblePets" :key="pet.slug" class="pet-card">
             <div class="pet-preview">
               <div class="pet-frame" :style="{ backgroundImage: `url(${pet.previewUrl || pet.spritesheetUrl})` }" />
             </div>
@@ -210,7 +210,7 @@ onMounted(() => {
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: calc(20px * var(--spacing-scale, 1)) calc(24px * var(--spacing-scale, 1)) calc(28px * var(--spacing-scale, 1));
+  padding: 20px 24px 28px;
 }
 
 .loading-state {
@@ -227,27 +227,27 @@ onMounted(() => {
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: calc(12px * var(--spacing-scale, 1));
+  gap: 12px;
   margin-bottom: 16px;
 }
 
 .summary-card {
-  border: var(--border-width, 1px) solid var(--border-color);
-  border-radius: var(--radius-component, 8px);
-  background: var(--theme-card-bg, var(--theme-card-wallpaper-bg, var(--bg-secondary)));
-  padding: calc(12px * var(--spacing-scale, 1)) calc(14px * var(--spacing-scale, 1));
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: calc(6px * var(--spacing-scale, 1));
+  gap: 6px;
   min-width: 0;
 
   span {
     color: var(--text-secondary);
-    font-size: calc(var(--font-size-base, 14px) * 12 / 14);
+    font-size: 12px;
   }
 
   strong {
-    font-size: calc(var(--font-size-base, 14px) * 20 / 14);
+    font-size: 20px;
     font-weight: 650;
     white-space: nowrap;
     overflow: hidden;
@@ -258,21 +258,21 @@ onMounted(() => {
 .filter-row {
   display: grid;
   grid-template-columns: minmax(240px, 1fr) 220px;
-  gap: calc(12px * var(--spacing-scale, 1));
+  gap: 12px;
   margin-bottom: 18px;
 }
 
 .pet-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: calc(14px * var(--spacing-scale, 1));
+  gap: 14px;
 }
 
 .pet-card {
   min-width: 0;
-  border: var(--border-width, 1px) solid var(--border-color);
-  border-radius: var(--radius-component, 8px);
-  background: var(--theme-card-bg, var(--theme-card-wallpaper-bg, var(--bg-secondary)));
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-secondary);
   overflow: hidden;
 }
 
@@ -301,21 +301,21 @@ onMounted(() => {
 }
 
 .pet-body {
-  padding: calc(12px * var(--spacing-scale, 1));
+  padding: 12px;
 }
 
 .pet-title-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: calc(10px * var(--spacing-scale, 1));
+  gap: 10px;
 
   h3 {
     margin: 0;
     min-width: 0;
-    font-size: calc(var(--font-size-base, 14px) * 15 / 14);
+    font-size: 15px;
     font-weight: 650;
-    line-height: var(--line-height, 1.25);
+    line-height: 1.25;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -326,7 +326,7 @@ onMounted(() => {
 .pet-meta {
   margin-top: 5px;
   color: var(--text-secondary);
-  font-size: calc(var(--font-size-base, 14px) * 12 / 14);
+  font-size: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -335,12 +335,12 @@ onMounted(() => {
 .pet-links {
   display: flex;
   flex-wrap: wrap;
-  gap: calc(8px * var(--spacing-scale, 1));
+  gap: 8px;
   margin-top: 10px;
 
   a {
-    color: var(--link-color, var(--accent-primary));
-    font-size: calc(var(--font-size-base, 14px) * 12 / 14);
+    color: var(--primary-color);
+    font-size: 12px;
     text-decoration: none;
 
     &:hover {
@@ -356,12 +356,12 @@ onMounted(() => {
 .load-more {
   display: flex;
   justify-content: center;
-  padding: calc(24px * var(--spacing-scale, 1)) 0 calc(4px * var(--spacing-scale, 1));
+  padding: 24px 0 4px;
 }
 
 @media (max-width: 720px) {
   .petdex-content {
-    padding: calc(16px * var(--spacing-scale, 1));
+    padding: 16px;
   }
 
   .summary-grid,

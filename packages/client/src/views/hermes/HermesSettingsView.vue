@@ -92,7 +92,7 @@ onMounted(() => {
 .hermes-settings-content {
   flex: 1 1 auto;
   min-height: 0;
-  padding: calc(20px * var(--spacing-scale, 1));
+  padding: 20px;
   overflow-y: auto;
 }
 </style>

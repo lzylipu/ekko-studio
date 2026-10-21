@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { deploymentUrl } from '@/utils/deployment-url'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -16,7 +15,6 @@ const entries = computed(() => [
   { key: 'workflow', route: 'hermes.workflow', label: 'sidebar.workflow', path: 'M8 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0M22 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0M22 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 12h3a4 4 0 0 0 4-4V6M8 12h3a4 4 0 0 1 4 4v2' },
   { key: 'history', route: 'hermes.history', label: 'sidebar.history', path: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0M12 7v5l3 2' },
   { key: 'models', route: 'hermes.models', label: 'sidebar.models', path: 'M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1' },
-  { key: 'usage', route: 'hermes.usage', label: 'sidebar.usage', path: 'M3 12h4v9H3zM10 7h4v14h-4zM17 3h4v18h-4z' },
 ])
 const activeKey = computed(() => {
   const name = String(route.name || '')
@@ -28,7 +26,7 @@ const activeKey = computed(() => {
 })
 const mobileNavigation = useMobileNavigation()
 function handleNavigate(key: string) {
-  if (mobileNavigation && ['connections', 'agents', 'models', 'usage', 'apiRelay'].includes(key)) {
+  if (mobileNavigation && ['models'].includes(key)) {
     mobileNavigation.open.value = false
   }
 }
@@ -45,14 +43,6 @@ function handleNavigate(key: string) {
           </RouteLinkItem>
         </template>
         {{ t(entry.label) }}
-      </NTooltip>
-      <NTooltip placement="right" trigger="hover">
-        <template #trigger>
-          <RouteLinkItem class="studio-navigation-rail__item" :to="{ name: 'hermes.apiRelay' }" :active="activeKey === 'apiRelay'" :aria-label="t('sidebar.apiRelay')" @click="handleNavigate('apiRelay')">
-            <img class="api-relay-logo" :src="deploymentUrl('/relay-logo.png')" width="24" height="24" alt="" aria-hidden="true" />
-          </RouteLinkItem>
-        </template>
-        {{ t('sidebar.apiRelay') }}
       </NTooltip>
     </nav>
     <div class="studio-navigation-rail__bottom">
@@ -80,11 +70,11 @@ function handleNavigate(key: string) {
   align-items: center;
   width: $navigation-rail-width;
   min-height: 0;
-  padding: calc(12px * var(--spacing-scale, 1)) calc(8px * var(--spacing-scale, 1));
-  background: transparent;
+  padding: 12px 8px;
+  background: $bg-sidebar;
 
-  :deep(.page-sidebar-bottom) { width: 100%; padding: 0 0 calc(16px * var(--spacing-scale, 1)); }
-  :deep(.page-sidebar-account-btn) { height: 44px; padding: calc(4px * var(--spacing-scale, 1)); }
+  :deep(.page-sidebar-bottom) { width: 100%; padding: 0 0 16px; }
+  :deep(.page-sidebar-account-btn) { height: 44px; padding: 4px; }
 }
 .studio-navigation-rail__nav {
   display: flex;
@@ -93,12 +83,11 @@ function handleNavigate(key: string) {
   width: 100%;
   flex-direction: column;
   align-items: center;
-  gap: calc(8px * var(--spacing-scale, 1));
+  gap: 8px;
   overflow-y: auto;
   scrollbar-width: none;
 }
-.studio-navigation-rail__bottom { display: flex; flex-direction: column; gap: calc(8px * var(--spacing-scale, 1)); padding-top: 12px; }
-.api-relay-logo { border-radius: var(--radius-component, 4px); }
+.studio-navigation-rail__bottom { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; }
 .studio-navigation-rail__item {
   display: grid;
   place-items: center;

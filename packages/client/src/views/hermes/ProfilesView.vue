@@ -101,12 +101,12 @@ function handleImported() {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: calc(8px * var(--spacing-scale, 1));
+  gap: 8px;
 }
 
 .profiles-content {
   flex: 1;
   overflow-y: auto;
-  padding: calc(20px * var(--spacing-scale, 1));
+  padding: 20px;
 }
 </style>

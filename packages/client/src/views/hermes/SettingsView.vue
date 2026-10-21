@@ -146,6 +146,6 @@ onMounted(() => {
 .settings-content {
   flex: 1;
   overflow-y: auto;
-  padding: calc(20px * var(--spacing-scale, 1));
+  padding: 20px;
 }
 </style>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { deploymentUrl } from '@/utils/deployment-url'
 import { agentMetadata } from '@/utils/agent-catalog'
 import PageLoading from '@/components/common/PageLoading.vue'
 import PageHeader from '@/components/layout/PageHeader.vue'
@@ -325,7 +324,7 @@ async function submitLegacyDataMigrationDecision(action: 'migrate' | 'decline'):
 
 async function maybePromptLegacyWindowsDataMigration() {
   const bridge = desktopBridge()
-  if (legacyDataMigrationChecked.value || bridge?.isDesktop !== true || bridge.remoteMode === true || bridge.platform !== 'win32') return
+  if (legacyDataMigrationChecked.value || bridge?.isDesktop !== true || bridge.platform !== 'win32') return
   legacyDataMigrationChecked.value = true
 
   try {
@@ -463,34 +462,10 @@ onUnmounted(() => {
           </NAlert>
 
           <div class="coding-agent-grid">
-            <section class="agent-card coding-agent-card" data-testid="agent-card-ekko">
-              <header class="agent-card-header compact">
-                <div class="agent-identity">
-                  <img :src="deploymentUrl('/coding-agents/ekko-agent.png')" alt="" class="agent-logo" />
-                  <div>
-                    <div class="agent-name-row">
-                      <h3>Ekko</h3>
-                      <NTag type="success" size="small" :bordered="false">{{ t('agentManager.builtIn') }}</NTag>
-                    </div>
-                    <p class="agent-version">Studio {{ formatVersion(appStore.serverVersion) }}</p>
-                  </div>
-                </div>
-              </header>
-              <div class="agent-actions">
-                <NButton
-                  secondary
-                  size="small"
-                  @click="router.push({ name: 'ekko.settings' })"
-                >
-                  {{ t('sidebar.settings') }}
-                </NButton>
-              </div>
-            </section>
-
           <section class="agent-card coding-agent-card hermes-card" data-testid="agent-card-hermes">
             <header class="agent-card-header compact">
               <div class="agent-identity">
-                <img :src="deploymentUrl('/coding-agents/hermes.png')" alt="" class="agent-logo" />
+                <img :src="'/coding-agents/hermes.png'" alt="" class="agent-logo" />
                 <div>
                   <div class="agent-name-row">
                     <h3>Hermes</h3>
@@ -698,33 +673,33 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: var(--theme-content-bg, $bg-main-surface);
+  background: $bg-main-surface;
 }
 
 .hermes-cli-details {
   display: flex;
   flex-direction: column;
-  gap: calc(12px * var(--spacing-scale, 1));
+  gap: 12px;
 }
 
 .hermes-cli-detail-row {
   display: flex;
   flex-direction: column;
-  gap: calc(6px * var(--spacing-scale, 1));
-  padding: calc(12px * var(--spacing-scale, 1));
-  border: var(--border-width, 1px) solid var(--border-color);
-  border-radius: var(--radius-component, 6px);
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
 
   strong {
     color: var(--text-color-2);
-    font-size: calc(var(--font-size-base, 14px) * 12 / 14);
+    font-size: 12px;
   }
 
   code {
     overflow-wrap: anywhere;
     color: var(--text-color-1);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: calc(var(--font-size-base, 14px) * 12 / 14);
+    font-size: 12px;
   }
 }
 
@@ -739,7 +714,7 @@ onUnmounted(() => {
 :global(.legacy-data-migration-dialog dl) {
   display: grid;
   grid-template-columns: max-content minmax(0, 1fr);
-  gap: calc(8px * var(--spacing-scale, 1)) calc(12px * var(--spacing-scale, 1));
+  gap: 8px 12px;
   margin: 0 0 12px;
 }
 
@@ -764,12 +739,12 @@ onUnmounted(() => {
 :global(.agent-ai-help-error) {
   max-height: 180px;
   margin: 0;
-  padding: calc(10px * var(--spacing-scale, 1)) calc(12px * var(--spacing-scale, 1));
+  padding: 10px 12px;
   overflow: auto;
-  border-radius: var(--radius-component, 8px);
+  border-radius: 8px;
   background: rgba(127, 127, 127, 0.1);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: calc(var(--font-size-base, 14px) * 12 / 14);
+  font-size: 12px;
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -789,12 +764,12 @@ onUnmounted(() => {
 
 .agent-manager-header-left {
   min-width: 0;
-  gap: calc(8px * var(--spacing-scale, 1));
+  gap: 8px;
 }
 
 .agent-manager-header-actions {
   flex: 0 0 auto;
-  gap: calc(8px * var(--spacing-scale, 1));
+  gap: 8px;
 }
 
 .header-title {
@@ -813,16 +788,16 @@ onUnmounted(() => {
   min-height: 100%;
   display: flex;
   flex-direction: column;
-  gap: calc(16px * var(--spacing-scale, 1));
+  gap: 16px;
   margin: 0 auto;
-  padding: calc(24px * var(--spacing-scale, 1));
+  padding: 24px;
 }
 
 .agent-card {
-  padding: calc(18px * var(--spacing-scale, 1));
-  border: var(--border-width, 1px) solid $border-color;
-  border-radius: var(--radius-component, 14px);
-  background: var(--theme-card-bg, $bg-card);
+  padding: 18px;
+  border: 1px solid $border-color;
+  border-radius: 14px;
+  background: $bg-card;
   box-shadow: 0 5px 18px rgba(0, 0, 0, 0.05);
 }
 
@@ -830,7 +805,7 @@ onUnmounted(() => {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: calc(18px * var(--spacing-scale, 1));
+  gap: 18px;
 
   &.compact {
     align-items: center;
@@ -840,23 +815,23 @@ onUnmounted(() => {
 .agent-identity {
   min-width: 0;
   align-items: flex-start;
-  gap: calc(12px * var(--spacing-scale, 1));
+  gap: 12px;
 
   h3 {
     margin: 0;
-    font-size: calc(var(--font-size-base, 14px) * 17 / 14);
+    font-size: 17px;
   }
 
   p {
     max-width: 720px;
     margin: 5px 0 0;
     color: $text-secondary;
-    font-size: calc(var(--font-size-base, 14px) * 12 / 14);
-    line-height: var(--line-height, 1.55);
+    font-size: 12px;
+    line-height: 1.55;
 
     &.agent-version {
       color: $text-primary;
-      font-size: calc(var(--font-size-base, 14px) * 13 / 14);
+      font-size: 13px;
       font-weight: 650;
       letter-spacing: 0.01em;
     }
@@ -865,16 +840,16 @@ onUnmounted(() => {
 
 .agent-name-row {
   flex-wrap: wrap;
-  gap: calc(8px * var(--spacing-scale, 1));
+  gap: 8px;
 }
 
 .agent-logo {
   width: 42px;
   height: 42px;
   flex: 0 0 auto;
-  padding: calc(4px * var(--spacing-scale, 1));
-  border: var(--border-width, 1px) solid $border-color;
-  border-radius: var(--radius-component, 11px);
+  padding: 4px;
+  border: 1px solid $border-color;
+  border-radius: 11px;
   background: rgba(255, 255, 255, 0.92);
   object-fit: contain;
 }
@@ -883,7 +858,7 @@ onUnmounted(() => {
   display: grid;
   grid-template-columns: 1fr;
   align-items: stretch;
-  gap: calc(16px * var(--spacing-scale, 1));
+  gap: 16px;
 }
 
 // Keep cards at least 340px wide when showing multiple columns, including 16px gaps.
@@ -903,18 +878,18 @@ onUnmounted(() => {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: calc(15px * var(--spacing-scale, 1));
+  gap: 15px;
 }
 
 .agent-actions {
   flex-wrap: wrap;
-  gap: calc(8px * var(--spacing-scale, 1));
+  gap: 8px;
   margin-top: auto;
 }
 
 @media (max-width: $breakpoint-mobile) {
   .agent-manager-content {
-    padding: calc(16px * var(--spacing-scale, 1));
+    padding: 16px;
   }
 
   .coding-agent-grid {
@@ -935,8 +910,8 @@ onUnmounted(() => {
 </style>
 
 <style scoped>
-.agent-update-policy { min-width: 0; width: 100%; box-sizing: border-box; padding-top: calc(10px * var(--spacing-scale, 1)); border-top: var(--border-width, 1px) solid var(--border-color, #eee); }
-.agent-update-policy-row { display: flex; justify-content: space-between; align-items: center; gap: calc(12px * var(--spacing-scale, 1)); font-size: calc(var(--font-size-base, 14px) * 12 / 14); }
+.agent-update-policy { min-width: 0; width: 100%; box-sizing: border-box; padding-top: 10px; border-top: 1px solid var(--border-color, #eee); }
+.agent-update-policy-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 12px; }
 .agent-update-policy small { display: block; margin-top: 6px; overflow-wrap: anywhere; }
 .agent-update-error { color: #c44; }
 </style>

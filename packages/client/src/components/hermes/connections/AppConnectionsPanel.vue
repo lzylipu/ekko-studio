@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { deploymentUrl } from '@/utils/deployment-url'
 import { usePageLoadingTask } from '@/composables/usePageLoading'
 import { computed, h, onMounted, onUnmounted, ref, watch } from 'vue'
 import { NSpin, NAlert, NButton, NDataTable, NEmpty, NModal, NPopconfirm, NSwitch, NTabPane, NTabs, NTag, useMessage } from 'naive-ui'
@@ -602,7 +601,7 @@ onUnmounted(() => {
         <p>{{ t('connections.app.subtitle') }}</p>
       </div>
       <div class="panel-actions">
-        <div class="view-switch" role="tablist" data-theme-surface="input">
+        <div class="view-switch" role="tablist">
           <button
             type="button"
             class="view-switch-button"
@@ -660,7 +659,7 @@ onUnmounted(() => {
     </NAlert>
 
     <template v-if="panelView === 'list'">
-      <div class="cloud-route-setting" data-theme-surface="card">
+      <div class="cloud-route-setting">
         <div class="cloud-route-copy">
           <strong>{{ t('connections.app.routeTitle') }}</strong>
           <span>{{ t('connections.app.routeDescription') }}</span>
@@ -703,10 +702,10 @@ onUnmounted(() => {
 
     <div v-else-if="panelView === 'download'" class="app-downloads">
       <div class="app-download-layout">
-        <section class="app-download-hero" data-theme-surface="card">
+        <section class="app-download-hero">
           <div class="app-download-intro">
             <div class="app-download-brand">
-              <img class="app-download-logo" :src="deploymentUrl('/logo.png')" alt="">
+              <img class="app-download-logo" src="/logo.png" alt="">
               <div>
                 <span>Hermes Studio Mobile</span>
                 <h3>{{ t('connections.app.downloadTitle') }}</h3>
@@ -737,7 +736,6 @@ onUnmounted(() => {
         <div class="app-platform-grid">
           <article
             class="app-platform-card app-platform-card--apk"
-            data-theme-surface="card"
             :class="androidDownloadUrl ? 'app-platform-card--available' : 'app-platform-card--pending'"
           >
             <div class="app-platform-card-header">
@@ -760,7 +758,7 @@ onUnmounted(() => {
               <p>Android</p>
             </div>
             <div class="app-platform-download-controls">
-              <div class="view-switch download-source-switch" role="tablist" aria-label="GitHub / Cloudflare" data-theme-surface="input">
+              <div class="view-switch download-source-switch" role="tablist" aria-label="GitHub / Cloudflare">
                 <button
                   type="button"
                   role="tab"
@@ -793,7 +791,6 @@ onUnmounted(() => {
 
           <article
             class="app-platform-card"
-            data-theme-surface="card"
             :class="googlePlayDownloadUrl ? 'app-platform-card--available' : 'app-platform-card--pending'"
           >
             <div class="app-platform-card-header">
@@ -829,7 +826,6 @@ onUnmounted(() => {
 
           <article
             class="app-platform-card"
-            data-theme-surface="card"
             :class="appleDownloadUrl ? 'app-platform-card--available' : 'app-platform-card--pending'"
           >
             <div class="app-platform-card-header">
@@ -942,7 +938,7 @@ onUnmounted(() => {
 
       <NTabPane name="cloud" :tab="t('connections.app.cloudConnection')">
         <div class="connection-pane">
-          <div class="cloud-route-setting cloud-route-setting--qr" data-theme-surface="card">
+          <div class="cloud-route-setting cloud-route-setting--qr">
             <div class="cloud-route-copy">
               <strong>{{ t('connections.app.routeTitle') }}</strong>
               <span>{{ t('connections.app.qrRouteDescription') }}</span>
@@ -1018,14 +1014,14 @@ onUnmounted(() => {
 .cloud-route-setting {
   flex: 0 0 auto;
   margin: 12px 20px 0;
-  padding: calc(12px * var(--spacing-scale, 1)) calc(14px * var(--spacing-scale, 1));
+  padding: 12px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: calc(16px * var(--spacing-scale, 1));
-  border: var(--border-width, 1px) solid $border-light;
-  border-radius: var(--radius-component, 10px);
-  background: var(--theme-card-bg, var(--theme-card-wallpaper-bg, rgba(var(--bg-card-rgb), 0.7)));
+  gap: 16px;
+  border: 1px solid $border-light;
+  border-radius: 10px;
+  background: rgba(var(--bg-card-rgb), 0.7);
 }
 
 .cloud-route-setting--qr {
@@ -1038,43 +1034,43 @@ onUnmounted(() => {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: calc(2px * var(--spacing-scale, 1));
+  gap: 2px;
 
   strong {
     color: $text-primary;
-    font-size: calc(var(--font-size-base, 14px) * 13 / 14);
+    font-size: 13px;
     font-weight: 650;
   }
 
   span {
     color: $text-muted;
-    font-size: calc(var(--font-size-base, 14px) * 11 / 14);
-    line-height: var(--line-height, calc(var(--font-size-base, 14px) * 16 / 14));
+    font-size: 11px;
+    line-height: 16px;
   }
 }
 
 .cloud-route-options {
   display: flex;
   flex-shrink: 0;
-  gap: calc(8px * var(--spacing-scale, 1));
+  gap: 8px;
 }
 
 .cloud-route-option {
   min-width: 138px;
-  padding: calc(7px * var(--spacing-scale, 1)) calc(10px * var(--spacing-scale, 1));
+  padding: 7px 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: calc(1px * var(--spacing-scale, 1));
+  gap: 1px;
   color: $text-secondary;
-  border: var(--border-width, 1px) solid $border-light;
-  border-radius: var(--radius-component, 8px);
+  border: 1px solid $border-light;
+  border-radius: 8px;
   background: transparent;
   cursor: pointer;
   transition: border-color $transition-fast, background-color $transition-fast, color $transition-fast;
 
   span {
-    font-size: calc(var(--font-size-base, 14px) * 12 / 14);
+    font-size: 12px;
     font-weight: 600;
   }
 
@@ -1093,12 +1089,12 @@ onUnmounted(() => {
 .panel-header {
   flex: 0 0 auto;
   min-height: 68px;
-  padding: calc(12px * var(--spacing-scale, 1)) calc(20px * var(--spacing-scale, 1));
+  padding: 12px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: calc(16px * var(--spacing-scale, 1));
-  border-bottom: var(--border-width, 1px) solid $border-color;
+  gap: 16px;
+  border-bottom: 1px solid $border-color;
 }
 
 .panel-heading {
@@ -1107,16 +1103,16 @@ onUnmounted(() => {
   h2 {
     margin: 0;
     color: $text-primary;
-    font-size: calc(var(--font-size-base, 14px) * 16 / 14);
+    font-size: 16px;
     font-weight: 650;
-    line-height: var(--line-height, calc(var(--font-size-base, 14px) * 22 / 14));
+    line-height: 22px;
   }
 
   p {
     margin: 2px 0 0;
     color: $text-muted;
-    font-size: calc(var(--font-size-base, 14px) * 12 / 14);
-    line-height: var(--line-height, calc(var(--font-size-base, 14px) * 18 / 14));
+    font-size: 12px;
+    line-height: 18px;
   }
 }
 
@@ -1124,45 +1120,40 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   flex: 0 0 auto;
-  gap: calc(10px * var(--spacing-scale, 1));
+  gap: 10px;
 }
 
 .view-switch {
   display: flex;
-  padding: calc(3px * var(--spacing-scale, 1));
+  padding: 3px;
   flex: 0 0 auto;
-  gap: calc(2px * var(--spacing-scale, 1));
+  gap: 2px;
   background: $bg-secondary;
-  border: var(--border-width, 1px) solid $border-light;
-  border-radius: var(--radius-component, 10px);
+  border: 1px solid $border-light;
+  border-radius: 10px;
 }
 
 .view-switch-button {
   min-width: 56px;
   height: 26px;
-  padding: 0 calc(11px * var(--spacing-scale, 1));
+  padding: 0 11px;
   color: $text-muted;
   background: transparent;
   border: 0;
-  border-radius: var(--radius-component, 7px);
+  border-radius: 7px;
   cursor: pointer;
   font: inherit;
-  font-size: calc(var(--font-size-base, 14px) * 12 / 14);
-  line-height: var(--line-height, calc(var(--font-size-base, 14px) * 26 / 14));
+  font-size: 12px;
+  line-height: 26px;
   transition: color $transition-fast, background-color $transition-fast, box-shadow $transition-fast;
 
   &:hover {
     color: $text-primary;
   }
 
-  &:focus-visible {
-    outline: 2px solid $accent-primary;
-    outline-offset: 1px;
-  }
-
   &--active {
     color: $text-primary;
-    background: var(--theme-card-bg, $bg-card);
+    background: $bg-card;
     box-shadow: 0 1px 4px rgba(var(--text-primary-rgb), 0.1);
     font-weight: 600;
   }
@@ -1172,11 +1163,14 @@ onUnmounted(() => {
   flex: 1 1 auto;
   height: 0;
   min-height: 0;
-  padding: calc(16px * var(--spacing-scale, 1)) calc(20px * var(--spacing-scale, 1)) calc(20px * var(--spacing-scale, 1));
+  padding: 16px 20px 20px;
   overflow: hidden;
 
   :deep(.n-data-table) {
     height: 100%;
+    --n-td-color: var(--bg-card);
+    --n-th-color: var(--bg-secondary);
+    --n-border-color: var(--border-color);
     --n-td-text-color: var(--text-primary);
     --n-th-text-color: var(--text-secondary);
   }
@@ -1190,7 +1184,7 @@ onUnmounted(() => {
 .app-downloads {
   flex: 1 1 auto;
   min-height: 0;
-  padding: calc(20px * var(--spacing-scale, 1));
+  padding: 20px;
   overflow: auto;
   background: linear-gradient(180deg, rgba(var(--accent-primary-rgb), 0.025), transparent 52%);
 }
@@ -1206,7 +1200,7 @@ onUnmounted(() => {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: calc(14px * var(--spacing-scale, 1));
+  gap: 14px;
 }
 
 .app-download-hero {
@@ -1222,8 +1216,8 @@ onUnmounted(() => {
     max-width: 560px;
     margin: 18px 0 0;
     color: $text-secondary;
-    font-size: calc(var(--font-size-base, 14px) * 14 / 14);
-    line-height: var(--line-height, calc(var(--font-size-base, 14px) * 22 / 14));
+    font-size: 14px;
+    line-height: 22px;
   }
 }
 
@@ -1234,16 +1228,16 @@ onUnmounted(() => {
 .app-download-brand {
   display: flex;
   align-items: center;
-  gap: calc(14px * var(--spacing-scale, 1));
+  gap: 14px;
 
   span {
     display: block;
     margin-bottom: 2px;
     color: $text-muted;
-    font-size: calc(var(--font-size-base, 14px) * 10 / 14);
+    font-size: 10px;
     font-weight: 650;
     letter-spacing: 0.09em;
-    line-height: var(--line-height, calc(var(--font-size-base, 14px) * 16 / 14));
+    line-height: 16px;
     text-transform: uppercase;
   }
 
@@ -1253,7 +1247,7 @@ onUnmounted(() => {
     font-size: clamp(21px, 2.5vw, 28px);
     font-weight: 650;
     letter-spacing: -0.03em;
-    line-height: var(--line-height, 1.2);
+    line-height: 1.2;
   }
 }
 
@@ -1263,7 +1257,7 @@ onUnmounted(() => {
   height: 54px;
   flex: 0 0 auto;
   object-fit: contain;
-  border-radius: var(--radius-component, 6px);
+  border-radius: 6px;
 }
 
 .app-download-meta {
@@ -1271,16 +1265,16 @@ onUnmounted(() => {
   align-items: center;
   flex-wrap: wrap;
   margin-top: 18px;
-  gap: calc(7px * var(--spacing-scale, 1));
+  gap: 7px;
 
   span {
-    padding: calc(5px * var(--spacing-scale, 1)) calc(9px * var(--spacing-scale, 1));
+    padding: 5px 9px;
     color: $text-secondary;
     background: $bg-secondary;
-    border: var(--border-width, 1px) solid $border-light;
+    border: 1px solid $border-light;
     border-radius: 999px;
-    font-size: calc(var(--font-size-base, 14px) * 10 / 14);
-    line-height: var(--line-height, calc(var(--font-size-base, 14px) * 14 / 14));
+    font-size: 10px;
+    line-height: 14px;
   }
 }
 
@@ -1291,28 +1285,28 @@ onUnmounted(() => {
 
   .view-switch-button {
     min-width: 0;
-    padding: 0 calc(4px * var(--spacing-scale, 1));
+    padding: 0 4px;
     flex: 1 1 0;
-    font-size: calc(var(--font-size-base, 14px) * 10 / 14);
+    font-size: 10px;
   }
 }
 
 .app-platform-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: calc(12px * var(--spacing-scale, 1));
+  gap: 12px;
 }
 
 .app-platform-card {
   position: relative;
   min-height: 188px;
-  padding: calc(18px * var(--spacing-scale, 1));
+  padding: 18px;
   display: flex;
   box-sizing: border-box;
   flex-direction: column;
-  background: var(--theme-card-bg, var(--theme-card-wallpaper-bg, $bg-card));
-  border: var(--border-width, 1px) solid $border-color;
-  border-radius: var(--radius-component, 14px);
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: 14px;
   transition: border-color $transition-fast, box-shadow $transition-fast, transform $transition-fast;
 
   &--available:hover {
@@ -1322,7 +1316,7 @@ onUnmounted(() => {
   }
 
   &--pending {
-    background: var(--theme-card-bg, var(--theme-card-wallpaper-bg, rgba(var(--bg-card-rgb), 0.64)));
+    background: rgba(var(--bg-card-rgb), 0.64);
   }
 }
 
@@ -1330,7 +1324,7 @@ onUnmounted(() => {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: calc(12px * var(--spacing-scale, 1));
+  gap: 12px;
 }
 
 .app-platform-icon {
@@ -1341,7 +1335,7 @@ onUnmounted(() => {
   justify-content: center;
   color: $text-primary;
   background: $bg-secondary;
-  border-radius: var(--radius-component, 12px);
+  border-radius: 12px;
 }
 
 .download-tag-qr {
@@ -1351,14 +1345,14 @@ onUnmounted(() => {
   z-index: 1;
   width: 112px;
   height: 112px;
-  padding: calc(5px * var(--spacing-scale, 1));
+  padding: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
   background: #ffffff;
-  border: var(--border-width, 1px) solid $border-light;
-  border-radius: var(--radius-component, 7px);
+  border: 1px solid $border-light;
+  border-radius: 7px;
 
   img {
     display: block;
@@ -1379,16 +1373,16 @@ onUnmounted(() => {
   h4 {
     margin: 0;
     color: $text-primary;
-    font-size: calc(var(--font-size-base, 14px) * 16 / 14);
+    font-size: 16px;
     font-weight: 650;
-    line-height: var(--line-height, calc(var(--font-size-base, 14px) * 22 / 14));
+    line-height: 22px;
   }
 
   p {
     margin: 4px 0 0;
     color: $text-muted;
-    font-size: calc(var(--font-size-base, 14px) * 11 / 14);
-    line-height: var(--line-height, calc(var(--font-size-base, 14px) * 17 / 14));
+    font-size: 11px;
+    line-height: 17px;
   }
 }
 
@@ -1401,7 +1395,7 @@ onUnmounted(() => {
   margin-top: auto;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: calc(8px * var(--spacing-scale, 1));
+  gap: 8px;
 
   .app-platform-action {
     margin-top: 0;
@@ -1416,7 +1410,7 @@ onUnmounted(() => {
   margin-top: auto;
   display: flex;
   flex-direction: column;
-  gap: calc(8px * var(--spacing-scale, 1));
+  gap: 8px;
 
   .download-source-switch {
     margin-top: 0;
@@ -1433,7 +1427,7 @@ onUnmounted(() => {
 
   &__reason {
     color: $text-primary;
-    font-size: calc(var(--font-size-base, 14px) * 13 / 14);
+    font-size: 13px;
     font-weight: 600;
   }
 
@@ -1441,9 +1435,9 @@ onUnmounted(() => {
     margin-top: 4px;
     display: flex;
     flex-wrap: wrap;
-    gap: calc(4px * var(--spacing-scale, 1)) calc(12px * var(--spacing-scale, 1));
+    gap: 4px 12px;
     color: $text-muted;
-    font-size: calc(var(--font-size-base, 14px) * 12 / 14);
+    font-size: 12px;
   }
 
   &__actions {
@@ -1454,19 +1448,19 @@ onUnmounted(() => {
 
 .connection-pane {
   min-height: 374px;
-  padding: calc(8px * var(--spacing-scale, 1)) 0 calc(4px * var(--spacing-scale, 1));
+  padding: 8px 0 4px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: calc(14px * var(--spacing-scale, 1));
+  gap: 14px;
 }
 
 .connection-qr {
   position: relative;
   width: 320px;
   height: 320px;
-  padding: calc(8px * var(--spacing-scale, 1));
+  padding: 8px;
   border-radius: $radius-md;
   background: #ffffff;
 
@@ -1489,14 +1483,14 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   color: $text-primary;
-  font-size: calc(var(--font-size-base, 14px) * 14 / 14);
+  font-size: 14px;
   font-weight: 600;
   background: rgba(255, 255, 255, 0.72);
 }
 
 .connection-countdown {
   color: $text-secondary;
-  font-size: calc(var(--font-size-base, 14px) * 13 / 14);
+  font-size: 13px;
 
   &.expired {
     color: $error;
@@ -1509,7 +1503,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: calc(12px * var(--spacing-scale, 1));
+  gap: 12px;
 }
 
 .refresh-qr-button {
@@ -1527,7 +1521,7 @@ onUnmounted(() => {
     margin: 12px 12px 0;
     align-items: stretch;
     flex-direction: column;
-    gap: calc(10px * var(--spacing-scale, 1));
+    gap: 10px;
   }
 
   .cloud-route-setting--qr {
@@ -1542,7 +1536,7 @@ onUnmounted(() => {
   .panel-header {
     align-items: flex-start;
     flex-direction: column;
-    padding: calc(12px * var(--spacing-scale, 1));
+    padding: 12px;
   }
 
   .panel-actions {
@@ -1551,17 +1545,17 @@ onUnmounted(() => {
   }
 
   .app-connections-table {
-    padding: calc(12px * var(--spacing-scale, 1));
+    padding: 12px;
   }
 
   .app-downloads {
-    padding: calc(12px * var(--spacing-scale, 1));
+    padding: 12px;
   }
 
   .app-download-hero {
     grid-template-columns: 1fr;
-    padding: calc(20px * var(--spacing-scale, 1));
-    gap: calc(22px * var(--spacing-scale, 1));
+    padding: 20px;
+    gap: 22px;
   }
 
   .app-platform-grid {
