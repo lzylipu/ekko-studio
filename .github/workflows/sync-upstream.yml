@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 2 * * *"
+  push:
+    branches: [custom]
 
 permissions:
   contents: write
@@ -17,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Checkout fork
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: hermes-only
@@ -30,49 +32,59 @@ jobs:
           git config user.email "lzylipu-bot@users.noreply.github.com"
           git config pull.rebase false
 
-      - name: Snapshot local customizations
+      - name: Check upstream updates
         id: upstream
         run: |
           git remote add upstream https://github.com/EKKOLearnAI/ekko-studio.git || true
           git fetch upstream main
-          if git merge-base --is-ancestor upstream/main HEAD; then
+          git fetch origin main custom hermes-only
+
+          if [ "$(git rev-parse origin/main)" = "$(git rev-parse upstream/main)" ]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "上游没有新提交，跳过合并和镜像构建。"
-            exit 0
+            echo "上游没有新提交。"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "检测到上游新提交。"
           fi
-          echo "changed=true" >> "$GITHUB_OUTPUT"
-          git diff --name-only $(git merge-base upstream/main HEAD)..HEAD > /tmp/custom_files.txt
-          mkdir -p /tmp/hermes-custom
-          while IFS= read -r f; do
-            if [ -f "$f" ]; then
-              mkdir -p "/tmp/hermes-custom/$(dirname "$f")"
-              cp "$f" "/tmp/hermes-custom/$f"
-            fi
-          done < /tmp/custom_files.txt
 
-      - name: Merge upstream
+      - name: Update main from upstream
         if: steps.upstream.outputs.changed == 'true'
         run: |
-          # Upstream wins while merging overlapping changes. The next step
-          # restores every fork-customized file from the saved snapshot.
-          git merge --no-edit -X theirs upstream/main
+          git switch --force-create main upstream/main
 
-      - name: Restore local customizations
-        if: steps.upstream.outputs.changed == 'true'
-        run: |
-          while IFS= read -r f; do
-            if [ -f "/tmp/hermes-custom/$f" ]; then
-              mkdir -p "$(dirname "$f")"
-              cp "/tmp/hermes-custom/$f" "$f"
-            fi
-          done < /tmp/custom_files.txt
-          git add -A
-          git diff --cached --quiet || git commit -m "sync: merge upstream into hermes-only, keep local customizations"
-
-      - name: Push merged commits
+      - name: Push updated main
         if: steps.upstream.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.PUSH_TOKEN }}
         run: |
-          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/lzylipu/ekko-studio.git"
-          git push origin HEAD:hermes-only
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push origin HEAD:main --force-with-lease
+
+      - name: Build integration branch
+        id: integration
+        run: |
+          git switch --detach origin/custom
+          git merge --no-edit -X ours upstream/main
+
+          unresolved="$(git diff --name-only --diff-filter=U)"
+          if [ -n "$unresolved" ]; then
+            echo "存在无法自动处理的真实冲突："
+            printf '%s\n' "$unresolved"
+            exit 1
+          fi
+
+          if [ "$(git rev-parse HEAD^{tree})" = "$(git rev-parse origin/hermes-only^{tree})" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "自定义分支和上游均未产生新的最终内容，跳过镜像构建。"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "最终内容有更新，将更新 hermes-only 并触发一次镜像构建。"
+          fi
+
+      - name: Push integration branch
+        if: steps.integration.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.PUSH_TOKEN }}
+        run: |
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push origin HEAD:hermes-only --force-with-lease
