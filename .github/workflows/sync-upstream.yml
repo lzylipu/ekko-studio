@@ -64,7 +64,26 @@ jobs:
         id: integration
         run: |
           git switch --detach origin/custom
-          git merge --no-edit -X ours upstream/main
+
+          # -X ours 不能自动处理 modify/delete 冲突。保留合并状态，
+          # 再显式维持 custom 分支中对上游工作流的删除。
+          if ! git merge --no-edit -X ours upstream/main; then
+            echo "检测到需要自动处理的合并冲突，开始逐项解决。"
+          fi
+
+          while IFS= read -r path; do
+            [ -n "$path" ] || continue
+            status="$(git status --short -- "$path" | cut -c1-2)"
+            case "$status" in
+              DU)
+                git rm -f -- "$path" || true
+                ;;
+              UD)
+                git checkout --ours -- "$path" || true
+                git add -- "$path" || true
+                ;;
+            esac
+          done < <(git diff --name-only --diff-filter=U)
 
           unresolved="$(git diff --name-only --diff-filter=U)"
           if [ -n "$unresolved" ]; then
